@@ -32,7 +32,7 @@ The Doctor Recommendation Website is a platform that allows users to find and ex
 
 ### Clone the repository:
 
-git clone https://github.com/your-username/doctor-recommendation.git
+git clone https://github.com/kalviumcommunity/S82_Balaji_Capstone_CareConnect
 cd doctor-recommendation
 
 ### Install dependencies:
@@ -51,44 +51,50 @@ node server.js  # Start the backend
 
 ### Week 1: Planning & Setup
 
-Define the project scope and features
+- Define the project scope and features
 
-Choose the tech stack
+- Choose the tech stack
 
-Set up the project repository and environment
+- Set up the project repository and environment
 
-Design wireframes and UI prototypes
+- Design wireframes and UI prototypes
 
 ### Week 2: Backend Development
 
-Set up the database schema (Doctors, Users, Reviews, etc.)
+- Set up the database schema (Doctors, Users, Reviews, etc.)
 
-Implement REST API for fetching doctor details
+- Implement REST API for fetching doctor details
 
-Implement authentication (if needed)
+- Implement authentication (if needed)
 
-Integrate search and filtering functionalities
+- Integrate search and filtering functionalities
 
 ### Week 3: Frontend Development
 
-Develop the homepage and search functionality
+- Develop the homepage and search functionality
 
-Create doctor listing and profile pages
+- Create doctor listing and profile pages
 
-Implement responsiveness and UI enhancements
+- Implement responsiveness and UI enhancements
 
-Integrate backend APIs
+- Integrate backend APIs
 
 ### Week 4: Testing & Deployment
 
-Test all functionalities (unit and integration testing)
+- Test all functionalities (unit and integration testing)
 
-Fix bugs and optimize performance
+- Fix bugs and optimize performance
 
-Deploy the application to a hosting platform
+- Deploy the application to a hosting platform
 
-Collect feedback and make improvements
+- Collect feedback and make improvements
 
 ## Contributing
 
-Contributions are welcome! If you'd like to contribute, please fork the repository and submit a pull request.
+- Contributions are welcome! If you'd like to contribute, please fork the repository and submit a pull request.
+
+## Conclusion
+
+The Doctor Recommendation Website is a useful tool for users to find healthcare professionals efficiently.The project 
+follows a structured development plan to ensure smooth implementation and a high-quality user experience. Future improvements could 
+include adding reviews, real-time availability tracking, and appointment booking features.
