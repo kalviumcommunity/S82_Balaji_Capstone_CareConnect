@@ -29,12 +29,11 @@ The Doctor Recommendation Website is a platform that allows users to find and ex
 
 - Hosting: Vercel / Netlify / render
 
-## Installation & Setup
+## Installation & Setup 
 
 ### Clone the repository:
 
 git clone https://github.com/kalviumcommunity/S82_Balaji_Capstone_CareConnect
-cd doctor-recommendation
 
 ### Install dependencies:
 
@@ -48,47 +47,106 @@ npm start  # Start the frontend
 
 node server.js  # Start the backend
 
-## 4-Week Development Schedule
+## Day-by-Day Plan
 
-### Week 1: Planning & Setup
+### Week 1: Project Initialization & Planning
+**Day 1:** 
+- Define project scope and objectives
+- Create low-fidelity wireframes
+- Submit project idea and plan
 
-- Define the project scope and features
+**Day 2:**
+- Develop high-fidelity wireframes
+- Set up a GitHub repository
+- Create an initial README file
 
-- Choose the tech stack
+**Day 3-4:**
+- Configure GitHub project board for task tracking
+- Add at least 10 entries for daily work tracking
 
-- Set up the project repository and environment
+**Day 5:**
+- Set up the backend server with Node.js & Express.js
+- Initialize a MongoDB database
 
-- Design wireframes and UI prototypes
+**Day 6:**
+- Design and implement the database schema
+- Establish relationships between entities in MongoDB
 
-### Week 2: Backend Development
+**Day 7:**
+- Perform database read and write operations
 
-- Set up the database schema (Doctors, Users, Reviews, etc.)
+---
 
-- Implement REST API for fetching doctor details
+### Week 2: Backend Development & API Implementation
+**Day 8:**
+- Develop and test GET API endpoints
 
-- Implement authentication (if needed)
+**Day 9:**
+- Develop and test POST API endpoints
 
-- Integrate search and filtering functionalities
+**Day 10:**
+- Develop and test PUT API endpoints
+
+**Day 11:**
+- Deploy the backend server
+
+**Day 12:**
+- Implement authentication (Username/Password)
+
+**Day 13:**
+- Implement third-party authentication (Google OAuth)
+
+**Day 14:**
+- Update API templates in the repository using Bruno
+
+---
 
 ### Week 3: Frontend Development
+**Day 15:**
+- Initialize the React frontend application
+- Set up the project structure
 
-- Develop the homepage and search functionality
+**Day 16:**
+- Develop core React components
 
-- Create doctor listing and profile pages
+**Day 17:**
+- Match frontend components with high-fidelity designs
 
-- Implement responsiveness and UI enhancements
+**Day 18:**
+- Implement file upload functionality
 
-- Integrate backend APIs
+**Day 19:**
+- Implement entity update and delete functionality
 
-### Week 4: Testing & Deployment
+**Day 20:**
+- Integrate frontend with backend APIs
 
-- Test all functionalities (unit and integration testing)
+**Day 21:**
+- Deploy the frontend server
 
-- Fix bugs and optimize performance
+---
 
-- Deploy the application to a hosting platform
+### Week 4: Testing, Debugging & Finalization
+**Day 22:**
+- Perform end-to-end testing
 
-- Collect feedback and make improvements
+**Day 23:**
+- Debug and resolve issues
+
+**Day 24:**
+- Final review and improvements
+
+**Day 25:**
+- Ensure matching between design and final implementation
+
+**Day 26:**
+- Add JWT-based authentication for secure API access
+
+**Day 27:**
+- Document project details and usage
+
+**Day 28:**
+- Final submission and presentation
 
 ## Contributing
 
