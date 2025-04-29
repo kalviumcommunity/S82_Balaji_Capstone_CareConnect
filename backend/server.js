@@ -4,6 +4,25 @@ const mongoose = require('mongoose');
 app.use(express.json())
 require('dotenv').config();
 const PORT = process.env.PORT
+const router = require('./routes/routes')
+
+// const bcrypt = require('bcrypt');
+// const saltRounds = 10;
+
+// patientSchema.pre('save', async function(next) {
+//   if (this.isModified('password')) {
+//     this.password = await bcrypt.hash(this.password, saltRounds);
+//   }
+//   next();
+// });
+
+
+
+app.use(router);
+
+mongoose.connect(process.env.MONGO_URL)
+.then(()=>console.log('connected to database'))
+.catch((err)=>console.log(err));
 
 app.get('/',(req,res)=>{
     res.status(200).send('Hello From Backend!');
