@@ -3,9 +3,11 @@ const router = express.Router();
 
 const patientcontroller = require('../controllers/patientcontrol')
 
-router.get('/',patientcontroller.getAllPatients);
+router.get('/get',patientcontroller.getAllPatients);
 
-router.post('/',patientcontroller.createPatient)
+router.post('/add',patientcontroller.createPatient)
+
+router.put('/edit/:id',patientcontroller.editPatient);
 
 
 module.exports = router;
