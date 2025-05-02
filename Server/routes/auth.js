@@ -14,15 +14,22 @@ router.get('/get/patient', async (req, res) => {
 });
 
 
-router.get('/get/doctor',async (req, res) => {
+
+
+router.post('/add/patient',async (req, res) => {
     try {
-        const get= await doctor.find(); 
-        res.status(200).json({ message: get }); 
+        const {fullname,email,password} = req.body;
+        const newpatient = new patient({
+            fullname,
+            email,
+            password
+        }) 
+        const saved = await newpatient.save();
+        res.status(200).json({ message: saved }); 
     } catch (err) {
         res.status(400).json({ message: err });
     }
 })
-
 
 
 module.exports = router;
