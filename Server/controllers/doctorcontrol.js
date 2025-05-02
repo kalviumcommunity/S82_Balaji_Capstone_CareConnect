@@ -31,9 +31,9 @@ exports.editDoctor = async(req,res)=>{
     )
     if(!updatedDoctor)
     {
-      return res.status(500).json({Error:'Doctor Not Found'})
+      return res.status(400).json({Error:'Doctor Not Found'})
     }
-    res.status(200).json({message:updatedDoctor})
+    res.status(200).json({updatedDoctor})
   }
   catch(err)
   {
