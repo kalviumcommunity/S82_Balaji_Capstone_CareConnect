@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 // ✅ Corrected import
-const router = require('../Server/routes/index.js');
+const router = require('./routes/index');
 
 app.use(express.json());
 
