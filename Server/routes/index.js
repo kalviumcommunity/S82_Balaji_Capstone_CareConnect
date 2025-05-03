@@ -1,12 +1,12 @@
 const express = require('express')
 const router = express.Router();
 
-const patientroute = require('./patientroute')
-const doctorroute = require('./doctorroute')
-const authroute = require('./auth')
+const patientRoute = require('./patientroute')
+const doctorRoute = require('./doctorroute')
+const authRoute = require('./auth')
 
-router.use('/patients',patientroute)
-router.use('/doctors',doctorroute)
-router.use('/auth',authroute)
+router.use('/patients',patientRoute)
+router.use('/doctors',doctorRoute)
+router.use('/auth',authRoute)
 
 module.exports = router;
