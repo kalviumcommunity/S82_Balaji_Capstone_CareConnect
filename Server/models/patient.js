@@ -16,7 +16,11 @@ const patientschema = new mongoose.Schema({
     {
         type:String,
         required:true
-    }
+    },
+    doctors: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Doctor'
+      }]
 },{timestamps:true})
 
 module.exports = mongoose.model('Patient',patientschema);

@@ -9,5 +9,6 @@ router.post('/add',patientcontroller.createPatient)
 
 router.put('/edit/:id',patientcontroller.editPatient);
 
+router.post('/:id/assign-doctor', patientcontroller.assignDoctorToPatient);
 
 module.exports = router;

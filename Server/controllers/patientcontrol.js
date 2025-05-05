@@ -1,6 +1,6 @@
 const Patient = require('../models/patient');
 
-// Get all patients
+// Get patients
 exports.getAllPatients = async (req, res) => {
   try {
     const patients = await Patient.find();
@@ -10,7 +10,7 @@ exports.getAllPatients = async (req, res) => {
   }
 };
 
-// Create a new patient
+// Create patient
 exports.createPatient = async (req, res) => {
   try {
     const newPatient = new Patient(req.body); // ✅ Fixed 'Patient'
@@ -21,7 +21,7 @@ exports.createPatient = async (req, res) => {
   }
 };
 
-// Edit a patient
+// Edit patient
 exports.editPatient = async (req, res) => {
   console.log("Edit Patient route hit"); // Log to check if the route is hit
   try {
@@ -40,5 +40,27 @@ exports.editPatient = async (req, res) => {
   } catch (err) {
     console.log("Error in editPatient:", err); // Log the error explicitly
     res.status(400).json({ error: err });
+  }
+};
+
+// Assign doctor
+exports.assignDoctorToPatient = async (req, res) => {
+  const { doctorId } = req.body;
+  const { id: patientId } = req.params;
+
+  try {
+    const patient = await Patient.findById(patientId);
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+
+    if (!patient.doctors.includes(doctorId)) {
+      patient.doctors.push(doctorId);
+      await patient.save();
+    }
+
+    res.status(200).json({ message: 'Doctor assigned successfully', patient });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
