@@ -53,7 +53,10 @@ exports.assignDoctorToPatient = async (req, res) => {
     if (!patient) {
       return res.status(404).json({ error: 'Patient not found' });
     }
-
+    if(!doctorId)
+    {
+      return res.status(400).send('Doctor Was not found');
+    }
     if (!patient.doctors.includes(doctorId)) {
       patient.doctors.push(doctorId);
       await patient.save();
