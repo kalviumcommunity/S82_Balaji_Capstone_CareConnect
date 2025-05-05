@@ -3,12 +3,11 @@ const app = express();
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-// ✅ Corrected import
+
 const router = require('./routes/index');
 
 app.use(express.json());
 
-// Mount all routes under /api
 app.use('/api', router);
 
 mongoose.connect(process.env.MONGO_URL)
