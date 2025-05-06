@@ -1,0 +1,117 @@
+
+
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Mail, Lock } from "lucide-react";
+import axios from "axios";
+
+const LoginForm = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  const togglePassword = () => setShowPassword(!showPassword);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("http://localhost:5000/login", form);
+      alert(res.data.message);
+      navigate("/home"); // redirect after successful login
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed");
+    }
+  };
+
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#e6f9ff] p-2 overflow-hidden">
+      <div className="flex flex-col md:flex-row w-full max-w-4xl shadow-lg rounded-xl overflow-hidden bg-white">
+        
+        {/* Left Image */}
+        <div className="hidden md:block md:w-1/2">
+          <img
+            src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            alt="Login Visual"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Login Form */}
+        <div className="w-full md:w-1/2 p-6 md:p-10">
+          <h1 className="text-3xl font-semibold text-center mb-6">Login</h1>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
+            <div>
+              <label htmlFor="email" className="text-sm mb-1 block">Email ID:</label>
+              <div className="relative">
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter Email"
+                  className="w-full px-3 py-2 text-sm rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400 pl-9"
+                />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label htmlFor="password" className="text-sm mb-1 block">Password:</label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter Password"
+                  className="w-full px-3 py-2 text-sm rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400 pl-9"
+                />
+                <Lock
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4 cursor-pointer"
+                  onClick={togglePassword}
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="space-y-2 pt-2">
+              <button type="submit" className="w-full bg-blue-600 text-white py-2 text-sm rounded-full hover:bg-blue-700 transition-colors">
+                Login
+              </button>
+            </div>
+
+            {/* Google Placeholder */}
+            <button className="w-full bg-white text-gray-700 py-2 text-sm rounded-full border hover:bg-gray-100 transition-colors flex items-center justify-center space-x-2">
+              <img
+                src="https://www.google.com/favicon.ico"
+                alt="Google"
+                className="w-4 h-4"
+              />
+              <span>Continue with Google</span>
+            </button>
+
+            {/* Sign Up Link */}
+            <p className="text-center text-xs pt-2">
+              Don&apos;t have an account?{' '}
+              <a href="/signup" className="text-blue-600 hover:underline">Signup</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LoginForm;
