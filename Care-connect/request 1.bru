@@ -4,21 +4,23 @@ meta {
   seq: 2
 }
 
-put {
-  url: http://localhost:3000/api/doctors/edit/681838cc7147e3787b1cc725
+post {
+  url: http://localhost:3000/api/auth/signup
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "fullName": "Dr. kumar",
-    "email": "kumar3@rge4ple.com",
-    "password": "pas344h22890a789",
-    "specialization":"pulmonologist",
-    "experience": 12,
-    "location": "delhi",
-    "certificateUrl": "https://example.com/certificates/meera.pdf",
-    "isVerified": true
+    "fullName": "Dr. John Doe",
+    "email": "johndoe@example.com",
+    "password": "hashedPassword123",
+    "role": "doctor",
+    "specialization": "Cardiologist",
+    "experience": 10,
+    "location": "Chennai, Tamil Nadu",
+    "certificateUrl": "https://example.com/certificate/johndoe_certificate.pdf",
+    "isVerified":true
   }
+  
 }
