@@ -1,6 +1,6 @@
 const Doctor = require('../models/doctor');
 
-// Get all doctors
+// Get 
 exports.getAllDoctors = async (req, res) => {
   try {
     const doctors = await Doctor.find();
@@ -10,7 +10,7 @@ exports.getAllDoctors = async (req, res) => {
   }
 };
 
-// Create a new doctor
+// Create 
 exports.createDoctor = async (req, res) => {
   try {
     const newDoctor = new Doctor(req.body);
@@ -20,7 +20,7 @@ exports.createDoctor = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
-
+//post
 exports.editDoctor = async(req,res)=>{
   try{
     const updates = req.body;
