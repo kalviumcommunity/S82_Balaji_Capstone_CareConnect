@@ -28,7 +28,7 @@ const doctorSchema = new mongoose.Schema({
   },
   certificateUrl: { 
     type: String,
-    required: true,
+    required:true,
   },
   isVerified: {
     type: Boolean,
