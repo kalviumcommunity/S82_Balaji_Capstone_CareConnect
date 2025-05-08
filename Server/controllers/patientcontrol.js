@@ -1,6 +1,6 @@
 const Patient = require('../models/patient');
 
-// Get patients
+// Get 
 exports.getAllPatients = async (req, res) => {
   try {
     const patients = await Patient.find();
@@ -10,7 +10,7 @@ exports.getAllPatients = async (req, res) => {
   }
 };
 
-// Create patient
+// Create 
 exports.createPatient = async (req, res) => {
   try {
     const newPatient = new Patient(req.body); // ✅ Fixed 'Patient'
@@ -21,7 +21,7 @@ exports.createPatient = async (req, res) => {
   }
 };
 
-// Edit patient
+// Edit 
 exports.editPatient = async (req, res) => {
   console.log("Edit Patient route hit"); // Log to check if the route is hit
   try {
