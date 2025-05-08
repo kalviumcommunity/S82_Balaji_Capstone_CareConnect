@@ -44,7 +44,7 @@ exports.login = async (req, res) => {
 
 exports.signup = async (req, res) => {
   const { fullName, email, password, role, specialization, experience, location, certificateUrl } = req.body;
-  const certificateFile = req.file; // File from multer
+  const certificateFile = req.file;
 
   try {
     let existingUser;
