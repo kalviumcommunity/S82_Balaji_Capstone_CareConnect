@@ -1,12 +1,10 @@
-
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import axios from "axios";
 
 const LoginForm = () => {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "", role: "" });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -20,9 +18,9 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/login", form);
+      const res = await axios.post("http://localhost:3000/api/auth/login", form);
       alert(res.data.message);
-      navigate("/home"); // redirect after successful login
+      navigate("/"); // redirect after successful login
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     }
@@ -83,6 +81,23 @@ const LoginForm = () => {
                   onClick={togglePassword}
                 />
               </div>
+            </div>
+
+            {/* Role Selection */}
+            <div>
+              <label htmlFor="role" className="text-sm mb-1 block">Select Role:</label>
+              <select
+                id="role"
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 text-sm rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                <option value="">Select Role</option>
+                <option value="doctor">Doctor</option>
+                <option value="patient">Patient</option>
+              </select>
             </div>
 
             {/* Submit Button */}
