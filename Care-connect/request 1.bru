@@ -5,22 +5,20 @@ meta {
 }
 
 post {
-  url: http://localhost:3000/api/auth/signup
+  url: http://localhost:3000/api/auth/login
   body: json
-  auth: inherit
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWMzNjViNjE2ZjA4OGI4OWE1N2MzNSIsInJvbGUiOiJwYXRpZW50IiwiaWF0IjoxNzQ2Njc5Mzg3LCJleHAiOjE3NDY3NjU3ODd9.NhrXFqlnt8LPvqq_luZToA4Zt0-ho0HI8huWM8UABz8
 }
 
 body:json {
   {
-    "fullName": "Dr. John Doe",
-    "email": "johndoe@example.com",
-    "password": "hashedPassword123",
-    "role": "doctor",
-    "specialization": "Cardiologist",
-    "experience": 10,
-    "location": "Chennai, Tamil Nadu",
-    "certificateUrl": "https://example.com/certificate/johndoe_certificate.pdf",
-    "isVerified":true
+    "email": "ram123@example.com",
+    "password": "rammm123",
+    "role": "patient"
   }
   
 }
