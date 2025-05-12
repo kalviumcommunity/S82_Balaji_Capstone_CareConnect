@@ -159,3 +159,5 @@ follows a structured development plan to ensure smooth implementation and a high
 include adding reviews, real-time availability tracking, and appointment booking features.
 
 #### Backend-deployment - https://s82-balaji-capstone-careconnect-2.onrender.com
+
+#### Frontend-deployment - care-connect-507706.netlify.app
