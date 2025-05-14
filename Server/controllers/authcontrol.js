@@ -1,111 +1,205 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
 const Doctor = require('../models/doctor');
 const Patient = require('../models/patient');
+const User = require('../src/models/user.model.js');
 const upload = require('../middleware/multer');
+const sendMail = require('../util/mail.js');
 
 const SECRET = process.env.SECRET_KEY;
+const otpStore = new Map();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔐 Doctor & Patient Login
+// ─────────────────────────────────────────────────────────────────────────────
 
 exports.login = async (req, res) => {
   const { email, password, role } = req.body;
-
   try {
     let user;
-
     if (role === 'doctor') {
       user = await Doctor.findOne({ email });
     } else if (role === 'patient') {
       user = await Patient.findOne({ email });
     } else {
-      return res.status(400).json({ message: 'Invalid role' });
+      return res.status(400).json({ error: 'Invalid role' });
     }
 
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    const token = jwt.sign(
-      { id: user._id, role },
-      SECRET,
-      { expiresIn: '1d' }
-    );
-
-    res.json({ token, role ,message:'login successful'});
+    const token = jwt.sign({ id: user._id, role }, SECRET, { expiresIn: '1d' });
+    res.status(200).json({ token, user });
   } catch (err) {
-    res.status(500).json({ message: 'Login failed', error: err.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 📝 Doctor & Patient Signup
+// ─────────────────────────────────────────────────────────────────────────────
+
 exports.signup = async (req, res) => {
-  const { fullName, email, password, role, specialization, experience, location, certificateUrl } = req.body;
-  const certificateFile = req.file;
+  const { name, email, password, role, specialization, phone, gender } = req.body;
 
   try {
-    let existingUser;
-    if (role === 'doctor') {
-      existingUser = await Doctor.findOne({ email });
-    } else if (role === 'patient') {
-      existingUser = await Patient.findOne({ email });
-    } else {
-      return res.status(400).json({ message: 'Invalid role' });
-    }
-
-    if (existingUser) {
-      return res.status(409).json({ message: 'User already exists' });
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
+    let user;
 
-    let newUser;
     if (role === 'doctor') {
-      if (!fullName || !specialization || !experience || !location) {
-        return res.status(400).json({ message: 'Doctor details are missing required fields' });
-      }
-
-      let certificateUrlToSave;
-
-      if (certificateFile) {
-        certificateUrlToSave = `/uploads/${certificateFile.filename}`;
-      } else if (certificateUrl) {
-        certificateUrlToSave = certificateUrl;
-      } else {
-
-        return res.status(400).json({ message: 'Certificate is required (either file or URL)' });
-      }
-
-
-      newUser = new Doctor({
-        fullName,
-        email,
-        password: hashedPassword,
-        specialization,
-        experience,
-        location,
-        certificateUrl: certificateUrlToSave,
-      });
+      const certificate = req.file ? req.file.path : null;
+      user = new Doctor({ name, email, password: hashedPassword, specialization, certificate, phone, gender });
+    } else if (role === 'patient') {
+      user = new Patient({ name, email, password: hashedPassword, phone, gender });
     } else {
-
-      newUser = new Patient({ fullname: fullName, email, password: hashedPassword });
+      return res.status(400).json({ error: 'Invalid role' });
     }
 
-    // Save the new user to the database
+    await user.save();
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 📤 Send OTP for User Signup
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function sendOTP(email, otp) {
+  const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: process.env.ADMIN_NAME,
+      pass: process.env.ADMIN_PASSWORD,
+    },
+  });
+
+  await transporter.sendMail({
+    from: `ClickIn <${process.env.ADMIN_NAME}>`,
+    to: email,
+    subject: 'Your OTP for Signup in ClickIn',
+    text: `Your OTP is: ${otp}. It is valid for 3 minutes.`,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 👤 User Signup (with OTP)
+// ─────────────────────────────────────────────────────────────────────────────
+
+exports.createUser = async (req, res) => {
+  const { name, email, password, phone, addresses } = req.body;
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 5);
+    const newUser = new User({ name, email, password: hashedPassword, phone, addresses });
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    otpStore.set(email, {
+      otp,
+      name,
+      expiresAt: Date.now() + 3 * 60 * 1000,
+    });
+
+    await sendOTP(email, otp);
     await newUser.save();
 
-    // Generate JWT token for the user
-    const token = jwt.sign(
-      { id: newUser._id, role },
-      SECRET,
-      { expiresIn: '1d' }
-    );
-
-    res.status(201).json({ message: 'Signup successful', token, role });
+    res.status(201).json({ message: 'OTP sent to your mail' });
   } catch (err) {
-    res.status(500).json({ message: 'Signup failed', error: err.message });
+    res.status(500).json({ error: 'Failed to create user', details: err.message });
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ✅ Verify OTP
+// ─────────────────────────────────────────────────────────────────────────────
+
+exports.otpverify = async (req, res) => {
+  const { email, otp } = req.body;
+
+  const stored = otpStore.get(email);
+  if (!stored || Date.now() > stored.expiresAt) {
+    return res.status(410).json({ message: 'OTP expired or not requested' });
+  }
+
+  if (stored.otp !== otp) {
+    return res.status(400).json({ message: 'Invalid OTP' });
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) return res.status(404).json({ message: 'Signup not initiated' });
+
+  await User.findByIdAndUpdate(user._id, { isActivated: true });
+  otpStore.delete(email);
+
+  res.status(200).json({ message: 'Signup successful' });
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔐 User Login (after OTP verified)
+// ─────────────────────────────────────────────────────────────────────────────
+
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) return res.status(404).json({ message: 'User not found' });
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+
+  if (!user.isActivated) return res.status(403).json({ message: 'Please verify your account via OTP' });
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+  res.cookie('accesstoken', token, {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+
+  res.status(200).json({ user, token });
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🌐 Google Auth Callback
+// ─────────────────────────────────────────────────────────────────────────────
+
+exports.googleAuthCallback = async (req, res) => {
+  try {
+    const { profile, user } = req.user;
+    const { displayName, emails } = profile;
+
+    if (!emails || emails.length === 0) {
+      return res.status(400).json({ message: 'Email is required for authentication' });
+    }
+
+    const email = emails[0].value;
+    const name = displayName;
+
+    let existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      existingUser = new User({ name, email, password: null, isActivated: true });
+      await existingUser.save();
+    }
+
+    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.cookie('accesstoken', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.redirect(`http://localhost:5173/google-success?token=${token}`);
+  } catch (err) {
+    res.status(500).json({ message: "Google Auth failed", error: err.message });
   }
 };
