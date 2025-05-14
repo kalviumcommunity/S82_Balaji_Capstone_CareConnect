@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import axios from "axios";
+import GoogleSignInButton from "./googleAuth/googlesigninbutton";
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "", role: "" });
@@ -29,7 +30,7 @@ const LoginForm = () => {
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[#e6f9ff] p-2 overflow-hidden">
       <div className="flex flex-col md:flex-row w-full max-w-4xl shadow-lg rounded-xl overflow-hidden bg-white">
-        
+
         {/* Left Image */}
         <div className="hidden md:block md:w-1/2">
           <img
@@ -107,19 +108,12 @@ const LoginForm = () => {
               </button>
             </div>
 
-            {/* Google Placeholder */}
-            <button className="w-full bg-white text-gray-700 py-2 text-sm rounded-full border hover:bg-gray-100 transition-colors flex items-center justify-center space-x-2">
-              <img
-                src="https://www.google.com/favicon.ico"
-                alt="Google"
-                className="w-4 h-4"
-              />
-              <span>Continue with Google</span>
-            </button>
+            {/* Google Sign In Button */}
+            <GoogleSignInButton />
 
             {/* Sign Up Link */}
             <p className="text-center text-xs pt-2">
-              Don&apos;t have an account?{' '}
+              Don&apos;t have an account?{" "}
               <a href="/signup" className="text-blue-600 hover:underline">Signup</a>
             </p>
           </form>

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Address = require('./addressSchema'); // Import address schema
 
 const doctorSchema = new mongoose.Schema({
   fullName: {
@@ -28,12 +29,16 @@ const doctorSchema = new mongoose.Schema({
   },
   certificateUrl: { 
     type: String,
-    required:true,
+    required: true,
   },
   isVerified: {
     type: Boolean,
     default: false, 
   },
+  addresses: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Address'  // Reference to address schema
+  }],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Doctor', doctorSchema);
