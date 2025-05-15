@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, Award, Shield, ChevronLeft, ChevronRight, Mail, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { CgProfile } from "react-icons/cg";
 
 function Home() {
   const specialties = [
@@ -22,21 +23,20 @@ function Home() {
     <div className="w-full min-h-screen flex flex-col bg-gradient-to-b from-sky-100 to-white">
       
       {/* Navigation */}
-      <nav className="w-full h-16 flex justify-between items-center  from-sky-200">
-        <h1 className="text-2xl font-semibold text-blue-700 ml-4">Care Connect</h1>
-        <div className="flex items-center gap-4 mr-4">
+      <nav className="w-full h-16 flex justify-between items-center from-sky-200 px-4">
+        <h1 className="text-2xl font-semibold text-blue-700">Care Connect</h1>
+        <div className="flex items-center gap-4">
           <Link to="/login">
             <button className="px-4 py-2 bg-blue-700 text-white rounded-full">Login</button>
           </Link>
           <Link to="/signup">
             <button className="px-4 py-2 bg-blue-700 text-white rounded-full">Sign Up</button>
           </Link>
-          <button className="p-2 rounded-full bg-gray-100">
-            <span className="sr-only">Menu</span>
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-            </svg>
-          </button>
+          <Link to="/profile">
+            <button className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200">
+              <CgProfile className="text-xl" />
+            </button>
+          </Link>
         </div>
       </nav>
 
@@ -68,10 +68,12 @@ function Home() {
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Search by Speciality</h2>
+              <Link to='/speciality'>
               <button className="flex items-center gap-2 text-blue-700 font-semibold">
                 Explore All
                 <ChevronRight className="w-5 h-5" />
               </button>
+              </Link>
             </div>
             <div className="relative">
               <div className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 scrollbar-hide">

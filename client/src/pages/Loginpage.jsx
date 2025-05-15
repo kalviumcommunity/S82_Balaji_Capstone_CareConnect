@@ -20,16 +20,17 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:3000/api/auth/login", form);
-      if(res.data?.user)
-      {
+
+      if (res.data?.user) {
+        // ✅ Save to localStorage
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
         alert(`Welcome ${res.data.user.fullName}`);
+        navigate("/");
+      } else {
+        alert("Login successful");
       }
-      else
-      {
-        alert('Login Successfull');
-      }
-      navigate("/"); // redirect after successful login
-      console.log(res.data);
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     }
@@ -92,7 +93,7 @@ const LoginForm = () => {
               </div>
             </div>
 
-            {/* Role Selection */}
+            {/* Role */}
             <div>
               <label htmlFor="role" className="text-sm mb-1 block">Select Role:</label>
               <select
@@ -109,17 +110,17 @@ const LoginForm = () => {
               </select>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <div className="space-y-2 pt-2">
               <button type="submit" className="w-full bg-blue-600 text-white py-2 text-sm rounded-full hover:bg-blue-700 transition-colors">
                 Login
               </button>
             </div>
 
-            {/* Google Sign In Button */}
+            {/* Google Sign In */}
             <GoogleSignInButton />
 
-            {/* Sign Up Link */}
+            {/* Sign Up */}
             <p className="text-center text-xs pt-2">
               Don&apos;t have an account?{" "}
               <a href="/signup" className="text-blue-600 hover:underline">Signup</a>
