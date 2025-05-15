@@ -12,7 +12,8 @@ const resolvers = {
   },
 
   Mutation: {
-    createDoctor: async (_, { input }) => {
+
+    createDoctor: async(_, { input }) => {
       const existing = await Doctor.findOne({ email: input.email });
       if (existing) {
         throw new Error("Doctor already exists with this email.");
