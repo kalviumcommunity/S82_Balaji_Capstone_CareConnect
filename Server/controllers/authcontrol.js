@@ -5,9 +5,9 @@ const nodemailer = require('nodemailer');
 
 const Doctor = require('../models/doctor');
 const Patient = require('../models/patient');
-const User = require('../src/models/user.model.js');
-const upload = require('../middleware/multer');
-const sendMail = require('../util/mail.js');
+const User = require('../models/patient.js');
+const upload = require('../middleware/multer.js');
+//const sendMail = require('../util/mail.js');
 
 const SECRET = process.env.SECRET_KEY;
 const otpStore = new Map();
@@ -33,9 +33,10 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id, role }, SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: user._id, role },SECRET, { expiresIn: '1d' });
     res.status(200).json({ token, user });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -45,17 +46,27 @@ exports.login = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 exports.signup = async (req, res) => {
-  const { name, email, password, role, specialization, phone, gender } = req.body;
+  const { fullName, email, password, role, specialization, phone, gender } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     let user;
 
     if (role === 'doctor') {
-      const certificate = req.file ? req.file.path : null;
-      user = new Doctor({ name, email, password: hashedPassword, specialization, certificate, phone, gender });
+      const certificateUrl = req.file ? req.file.path : null;
+user = new Doctor({
+  fullName: fullName,
+  email,
+  password: hashedPassword,
+  specialization,
+  experience: req.body.experience, 
+  location: req.body.location,     
+  certificateUrl,                  
+  addresses: [],                   
+});
+
     } else if (role === 'patient') {
-      user = new Patient({ name, email, password: hashedPassword, phone, gender });
+      user = new Patient({ fullName, email, password: hashedPassword, phone, gender });
     } else {
       return res.status(400).json({ error: 'Invalid role' });
     }
@@ -63,6 +74,7 @@ exports.signup = async (req, res) => {
     await user.save();
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
+    console.error("Signup Error:", err);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -81,7 +93,7 @@ async function sendOTP(email, otp) {
   });
 
   await transporter.sendMail({
-    from: `ClickIn <${process.env.ADMIN_NAME}>`,
+    from: `Care-connect <${process.env.ADMIN_NAME}>`,
     to: email,
     subject: 'Your OTP for Signup in ClickIn',
     text: `Your OTP is: ${otp}. It is valid for 3 minutes.`,

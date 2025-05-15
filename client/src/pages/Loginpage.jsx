@@ -20,8 +20,16 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:3000/api/auth/login", form);
-      alert(res.data.message);
+      if(res.data?.user)
+      {
+        alert(`Welcome ${res.data.user.fullName}`);
+      }
+      else
+      {
+        alert('Login Successfull');
+      }
       navigate("/"); // redirect after successful login
+      console.log(res.data);
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     }

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Address = require('./addressSchema'); // Import address schema
+const Address = require('./address'); // Import address schema
 
 const patientSchema = new mongoose.Schema({
   fullname: {
