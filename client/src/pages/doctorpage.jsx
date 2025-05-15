@@ -1,31 +1,34 @@
-import React from 'react';
-import { ChevronLeft, MapPin, BadgeCheck } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ChevronLeft, MapPin, BadgeCheck, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 function DoctorsPage() {
-  const doctors = [
-    {
-      name: 'Dr. Aarthi Ramesh',
-      specialty: 'Dermatologist',
-      experience: '10+ years',
-      location: 'Chennai, TN',
-      image: 'https://randomuser.me/api/portraits/women/44.jpg'
-    },
-    {
-      name: 'Dr. Vishal Menon',
-      specialty: 'Dermatologist',
-      experience: '8 years',
-      location: 'Coimbatore, TN',
-      image: 'https://randomuser.me/api/portraits/men/46.jpg'
-    },
-    {
-      name: 'Dr. Priya Sharma',
-      specialty: 'Dermatologist',
-      experience: '12 years',
-      location: 'Madurai, TN',
-      image: 'https://randomuser.me/api/portraits/women/47.jpg'
+  const [doctors, setDoctors] = useState([]);
+
+  // Fetch doctors from backend
+  const fetchDoctors = async () => {
+    try {
+      const res = await axios.get('http://localhost:3000/api/doctors');
+      setDoctors(res.data);
+    } catch (err) {
+      console.error('Failed to fetch doctors', err);
     }
-  ];
+  };
+
+  // Delete doctor
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/doctors/${id}`);
+      fetchDoctors(); // Refresh list
+    } catch (err) {
+      console.error('Failed to delete doctor', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-100 to-white px-4 py-10">
@@ -43,9 +46,9 @@ function DoctorsPage() {
 
       {/* Doctor Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {doctors.map((doctor, index) => (
+        {doctors.map((doctor) => (
           <div
-            key={index}
+            key={doctor._id}
             className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center text-center transition hover:shadow-xl"
           >
             <img
@@ -63,6 +66,15 @@ function DoctorsPage() {
               <MapPin className="w-4 h-4" />
               <span>{doctor.location}</span>
             </div>
+
+            {/* Delete Button */}
+            <button
+              onClick={() => handleDelete(doctor._id)}
+              className="mt-4 flex items-center gap-2 text-sm text-red-500 hover:text-red-700 transition"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </button>
           </div>
         ))}
       </div>
