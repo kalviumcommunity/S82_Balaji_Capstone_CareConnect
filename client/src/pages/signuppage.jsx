@@ -74,10 +74,11 @@ const SignupForm = () => {
       <div className="flex flex-col md:flex-row w-full max-w-4xl shadow-lg rounded-xl overflow-hidden bg-white">
         <div className="hidden md:block md:w-1/2">
           <img
-            src="https://images.unsplash.com/photo-1543363136-59b7b660aa94?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-            alt="Sign Up"
-            className="w-full h-full object-cover"
-          />
+  src="https://sdk-image2.s3.ap-south-1.amazonaws.com/small_Sarvodaya_Building_New_Image_final_8d5554a560.jpg"
+  alt="Sign Up"
+  className="w-full h-full object-cover"
+/>
+
         </div>
 
         <div className="w-full md:w-1/2 p-6 md:p-10">
