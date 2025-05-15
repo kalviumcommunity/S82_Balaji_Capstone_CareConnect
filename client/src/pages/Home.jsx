@@ -16,6 +16,8 @@ function Home() {
     { title: 'Verified Doctors', icon: <Shield className="w-8 h-8 mx-auto text-blue-700" /> }
   ];
 
+  const isAuthenticated = () => !!localStorage.getItem("token");
+
   return (
     <div className="w-full min-h-screen flex flex-col bg-gradient-to-b from-sky-100 to-white">
       
