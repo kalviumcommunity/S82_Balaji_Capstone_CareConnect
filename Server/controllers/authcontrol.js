@@ -8,9 +8,34 @@ const Patient = require('../models/patient');
 const User = require('../models/patient.js');
 const upload = require('../middleware/multer.js');
 //const sendMail = require('../util/mail.js');
-
+require('dotenv').config();
 const SECRET = process.env.SECRET_KEY;
 const otpStore = new Map();
+
+
+
+// In your auth or user controller
+
+const getProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const role = req.user.role; // assume you store this in JWT or session
+
+    if (role === 'doctor') {
+      const doctor = await Doctor.findById(userId).populate('addresses');
+      return res.json({ user: doctor });
+    } else {
+      const patient = await Patient.findById(userId)
+        .populate('address')
+        .populate({ path: 'doctors', populate: { path: 'addresses' } });
+      return res.json({ user: patient });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to fetch profile", error: error.message });
+  }
+};
+
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🔐 Doctor & Patient Login
@@ -66,7 +91,7 @@ user = new Doctor({
 });
 
     } else if (role === 'patient') {
-      user = new Patient({ fullName, email, password: hashedPassword, phone, gender });
+      user = new Patient({ fullName, email, password: hashedPassword});
     } else {
       return res.status(400).json({ error: 'Invalid role' });
     }
@@ -75,7 +100,7 @@ user = new Doctor({
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
     console.error("Signup Error:", err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error' },err);
   }
 };
 

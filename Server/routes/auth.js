@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authcontrol');
 const upload = require('../middleware/multer');
+const authController = require('../controllers/authcontrol');
+const authMiddleware = require('../middleware/authmiddleware');
 
+// router.get('/profile', authMiddleware, authController.getProfile);
 // 📝 Doctor/Patient Signup & Login
 router.post('/signup', upload.single('certificate'), authController.signup);
 router.post('/login', authController.login);

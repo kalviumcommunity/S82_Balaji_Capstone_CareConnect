@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Address = require('./address'); // Import address schema
 
 const patientSchema = new mongoose.Schema({
-  fullname: {
+  fullName: {
     type: String,
     required: true,
   },
