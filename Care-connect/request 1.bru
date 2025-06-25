@@ -4,19 +4,24 @@ meta {
   seq: 2
 }
 
-post {
-  url: http://localhost:3000/api/auth/login
+get {
+  url: http://localhost:3000/api/doctors/specialty/dermatologist
   body: json
   auth: bearer
 }
 
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NTBmOGFhODgwNDVjMjc0MGQ1ZWQ4MyIsInJvbGUiOiJkb2N0b3IiLCJpYXQiOjE3NTAxMzc3NDcsImV4cCI6MTc1MDIyNDE0N30.PdRHw-bf4iQa_5ZnT5A5GXh1Rh8Iu7rkxVxaKaiMrA8
+}
+
 auth:bearer {
-  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWMzNjViNjE2ZjA4OGI4OWE1N2MzNSIsInJvbGUiOiJwYXRpZW50IiwiaWF0IjoxNzQ2Njc5Mzg3LCJleHAiOjE3NDY3NjU3ODd9.NhrXFqlnt8LPvqq_luZToA4Zt0-ho0HI8huWM8UABz8
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NTBmOGFhODgwNDVjMjc0MGQ1ZWQ4MyIsInJvbGUiOiJkb2N0b3IiLCJpYXQiOjE3NTAxMzc3NDcsImV4cCI6MTc1MDIyNDE0N30.PdRHw-bf4iQa_5ZnT5A5GXh1Rh8Iu7rkxVxaKaiMrA8
 }
 
 body:json {
   {
-    "email": "ram123@example.com",
+    "fullname":"jhj",
+    "email": "balajier2006@gmail.com",
     "password": "rammm123",
     "role": "patient"
   }

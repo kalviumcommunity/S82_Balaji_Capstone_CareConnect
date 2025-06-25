@@ -16,19 +16,19 @@ const otpStore = new Map();
 
 // In your auth or user controller
 
-const getProfile = async (req, res) => {
+exports.getprofile = async (req, res) => {
   try {
     const userId = req.user.id;
     const role = req.user.role; // assume you store this in JWT or session
-
+    const address = req.user.address;
     if (role === 'doctor') {
       const doctor = await Doctor.findById(userId).populate('addresses');
-      return res.json({ user: doctor });
+      return res.json({ user:{doctor,role} });
     } else {
       const patient = await Patient.findById(userId)
         .populate('address')
-        .populate({ path: 'doctors', populate: { path: 'addresses' } });
-      return res.json({ user: patient });
+        .populate({ path: 'doctors', populate: { path: 'address' } });
+      return res.json({ user: {patient,role,address} });
     }
   } catch (error) {
     return res.status(500).json({ message: "Failed to fetch profile", error: error.message });
@@ -58,7 +58,7 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id, role },SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: user._id, role},SECRET, { expiresIn: '7d' });
     res.status(200).json({ token, user });
   } catch (err) {
     console.log(err);
@@ -71,7 +71,7 @@ exports.login = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 exports.signup = async (req, res) => {
-  const { fullName, email, password, role, specialization, phone, gender } = req.body;
+  const { fullName, email, password, role, specialization} = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -83,7 +83,7 @@ user = new Doctor({
   fullName: fullName,
   email,
   password: hashedPassword,
-  specialization,
+  specialization:specialization.toLowerCase(),
   experience: req.body.experience, 
   location: req.body.location,     
   certificateUrl,                  
@@ -232,7 +232,7 @@ exports.googleAuthCallback = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: 'None',
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 72 * 60 * 60 * 1000,
     });
 
     res.redirect(`http://localhost:5173/google-success?token=${token}`);

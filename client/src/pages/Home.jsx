@@ -1,14 +1,31 @@
-import React from 'react';
+import React,{useRef} from 'react';
 import { Search, Award, Shield, ChevronLeft, ChevronRight, Mail, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { CgProfile } from "react-icons/cg";
-
+import { useAuth } from './authentication/authcontext';
+import '../app.css'
+import '../index.css'
 function Home() {
   const specialties = [
-    { title: 'Pulmonologist', icon: '🫁' },
-    { title: 'Dermatologist', icon: '👨‍⚕️' },
-    { title: 'Pediatrics', icon: '👶' }
+    { title: 'Pulmonologist', icon: '🫁',link:'doctors/pulmonologist' },
+    { title: 'Dermatologist', icon: '👨‍⚕️' ,link:'doctors/dermatologist'},
+    { title: 'Pediatrics', icon: '👶',link:'doctors/pedatrics' },
+    { title: 'Gynecologist', icon: '👩',link:'/doctors/gynecologist'},
+    { title: 'Cardiologist', icon: '❤️' ,link:'/doctors/cardiologist'},
+  { title: 'Neurologist', icon: '🧠' ,link:'/doctors/neurologist'},
+  { title: 'Orthopedic', icon: '🦴' ,link:'/doctors/orthopedic'},
+  { title: 'ENT Specialist', icon: '👂' ,link:'/doctors/ent'}
   ];
+
+  const specialref = useRef();
+
+  const scrollleft = ()=>{
+    specialref.current.scrollBy({left:-200,behavior:'smooth'});
+  }
+
+  const scrollright = ()=>{
+    specialref.current.scrollBy({left:200,behavior:'smooth'});
+  }
 
   const features = [
     { title: 'Experienced Doctors', icon: <Award className="w-8 h-8 mx-auto text-blue-700" /> },
@@ -17,21 +34,44 @@ function Home() {
     { title: 'Verified Doctors', icon: <Shield className="w-8 h-8 mx-auto text-blue-700" /> }
   ];
 
-  const isAuthenticated = () => !!localStorage.getItem("token");
+  const { isLoggedIn, logout } = useAuth(); // ✅ Get values from context
+
+
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-gradient-to-b from-sky-100 to-white">
+    <>
+      <div className="bubble-wrapper to-blue-500">
+  {[...Array(10)].map((_, i) => (
+    <span className={`bubble bubble-${i + 1}`} key={i}>red</span>
+  ))}
+</div>
+
+    <div className="w-full min-h-screen flex flex-col relative z-10 bg-gradient-to-b from-sky-100 to-white">
+
       
       {/* Navigation */}
       <nav className="w-full h-16 flex justify-between items-center from-sky-200 px-4">
         <h1 className="text-2xl font-semibold text-blue-700">Care Connect</h1>
         <div className="flex items-center gap-4">
-          <Link to="/login">
-            <button className="px-4 py-2 bg-blue-700 text-white rounded-full">Login</button>
-          </Link>
-          <Link to="/signup">
-            <button className="px-4 py-2 bg-blue-700 text-white rounded-full">Sign Up</button>
-          </Link>
+          <div className="space-x-4">
+  {isLoggedIn ? (
+    <button
+      onClick={logout}
+      className="px-4 py-2 bg-blue-400 text-white rounded-full"
+    >
+      Logout
+    </button>
+  ) : (
+    <>
+      <Link to="/login">
+        <button className="px-4 py-2 bg-blue-700 text-white rounded-full">Login</button>
+      </Link>
+      <Link to="/signup">
+        <button className="px-4 py-2 bg-blue-700 text-white rounded-full">Sign Up</button>
+      </Link>
+    </>
+  )}
+</div>
           <Link to="/profile">
             <button className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200">
               <CgProfile className="text-xl" />
@@ -76,18 +116,21 @@ function Home() {
               </Link>
             </div>
             <div className="relative">
-              <div className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 scrollbar-hide">
-                {specialties.map((specialty, index) => (
+              <div ref={specialref} className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 scrollbar-hide">
+                {specialties.map((specialty, index,link) => (
+                  <Link to={specialty.link || "/doctors"} key={index}>
                   <div key={index} className="flex-none w-50 h-50 bg-white p-8 rounded-xl shadow-lg text-center">
                     <div className="text-4xl mb-3 relative top-3">{specialty.icon}</div>
+                    
                     <h3 className="font-semibold top-10 relative">{specialty.title}</h3>
                   </div>
+                  </Link>
                 ))}
               </div>
-              <button className="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md">
+              <button onClick={scrollleft} className="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md">
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <button className="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md">
+              <button onClick={scrollright} className="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md">
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
@@ -157,6 +200,7 @@ function Home() {
         </div>
       </footer>
     </div>
+    </>
   );
 }
 

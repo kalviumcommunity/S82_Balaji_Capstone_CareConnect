@@ -57,3 +57,45 @@ body, html, #root {
   width: 100%;
   display: flex;
 }
+
+.bubble-wrapper {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  z-index: -1; /* ✅ Behind all content */
+  pointer-events: none; /* ✅ Allow clicks through bubbles */
+}
+
+/* Bubble Styles */
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  background: rgba(135, 206, 250, 0.6); /* Light blue transparent */
+  border-radius: 50%;
+  animation: rise 10s infinite ease-in;
+  opacity: 0.8;
+  filter: blur(1px);
+}
+
+/* Bubbles: Size, position, delay */
+.bubble-1  { width: 40px; height: 40px; left: 10%; animation-delay: 0s; }
+.bubble-2  { width: 60px; height: 60px; left: 30%; animation-delay: 1s; }
+.bubble-3  { width: 50px; height: 50px; left: 50%; animation-delay: 2s; }
+.bubble-4  { width: 70px; height: 70px; left: 70%; animation-delay: 3s; }
+.bubble-5  { width: 30px; height: 30px; left: 20%; animation-delay: 4s; }
+.bubble-6  { width: 80px; height: 80px; left: 40%; animation-delay: 5s; }
+.bubble-7  { width: 20px; height: 20px; left: 60%; animation-delay: 6s; }
+.bubble-8  { width: 90px; height: 90px; left: 80%; animation-delay: 7s; }
+.bubble-9  { width: 50px; height: 50px; left: 15%; animation-delay: 8s; }
+.bubble-10 { width: 60px; height: 60px; left: 85%; animation-delay: 9s; }
+
+/* Animation Keyframes */
+@keyframes rise {
+  to {
+    transform: translateY(-100vh);
+    opacity: 0;
+  }
+}
