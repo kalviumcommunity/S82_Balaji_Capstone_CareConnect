@@ -1,12 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const Doctor = require('../models/doctor');
-const doctorcontroller = require('../controllers/doctorcontrol')
+const doctorController = require('../controllers/doctorcontrol');
+const { verifyToken, authorizeRoles } = require('../middleware/authMiddleware');
 
-router.get('/get',doctorcontroller.getAllDoctors);
+// All Doctors
+router.get('/get', doctorController.getAllDoctors);
 
-router.post('/add',doctorcontroller.createDoctor);
+// Add New
+router.post('/add', doctorController.createDoctor);
 
-router.put('/edit/:id',doctorcontroller.editDoctor);
+// Edit
+router.put('/edit/:id', doctorController.editDoctor);
+
+// Delete — restricted to doctor (own profile) or admin
+router.delete('/:id', verifyToken, doctorController.deleteDoctor);
+
+// Specialty based fetch
+router.get('/specialty/:specialization', doctorController.getDoctorsBySpecialization);
 
 module.exports = router;

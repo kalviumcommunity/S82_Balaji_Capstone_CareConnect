@@ -33,7 +33,7 @@ const doctorSchema = new mongoose.Schema({
   },
   isVerified: {
     type: Boolean,
-    default: false, 
+    default: true, 
   },
   addresses: [{ 
     type: mongoose.Schema.Types.ObjectId, 

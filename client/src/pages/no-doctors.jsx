@@ -13,11 +13,7 @@ function NoDoctorsPage() {
       </Link>
 
       {/* Empty State Illustration */}
-      <img
-        src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXYwY2hweGYzOXB0cnljNWIzNzc3dWU0aGV6ZGRmN2QyYnp5a240YSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gfsQffBnuc6e096brx/giphy.gif"
-        alt="No Doctors Found"
-        className="w-80 max-w-full mb-8 rounded-xl"
-      />
+      
 
       {/* Message */}
       <h1 className="text-3xl font-bold text-blue-800 mb-2">No Doctors Found</h1>
