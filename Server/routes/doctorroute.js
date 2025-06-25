@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const doctorController = require('../controllers/doctorcontrol');
-const { verifyToken, authorizeRoles } = require('../middleware/authMiddleware');
+const { verifyToken } = require('../middleware/authmiddleware');
 
 // All Doctors
 router.get('/get', doctorController.getAllDoctors);
