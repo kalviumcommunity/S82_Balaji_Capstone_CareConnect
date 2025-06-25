@@ -3,14 +3,16 @@ import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const specialties = [
-  { title: 'Pulmonologist', icon: '🫁',link:'/no-doctor' },
-  { title: 'Dermatologist', icon: '👨‍⚕️', link: '/doctors' }, // 🔗 Linked
-  { title: 'Pediatrics', icon: '👶' ,link:'/no-doctor'},
-  { title: 'Gynecologist', icon: '👩‍⚕️' ,link:'/no-doctor'},
-  { title: 'Cardiologist', icon: '❤️' ,link:'/no-doctor'},
-  { title: 'Neurologist', icon: '🧠' ,link:'/no-doctor'},
-  { title: 'Orthopedic', icon: '🦴' ,link:'/no-doctor'},
-  { title: 'ENT Specialist', icon: '👂' ,link:'/no-doctor'},
+  { title: 'Pulmonologist', icon: '🫁',link:'/doctors/pulmonologist' },
+  { title: 'Dermatologist', icon: '👨‍⚕️', link: '/doctors/dermatologist' }, // 🔗 Linked
+  { title: 'Pediatrics', icon: '👶' ,link:'/doctors/pediatrics'},
+  { title: 'Gynecologist', icon: '👩‍⚕️' ,link:'/doctors/gynecologist'},
+  { title: 'Cardiologist', icon: '❤️' ,link:'/doctors/cardiologist'},
+  { title: 'Neurologist', icon: '🧠' ,link:'/doctors/neurologist'},
+  { title: 'Orthopedic', icon: '🦴' ,link:'/doctors/orthopedic'},
+  { title: 'ENT Specialist', icon: '👂' ,link:'/doctors/ent'},
+  { title: 'Psychatrist' , icon:'👨‍🔬' , link:'/doctors/psychatrist'},
+  { title: 'General Physician' , icon:'👨‍🔬' , link:'/doctors/general'}
 ];
 
 function SpecialityPage() {

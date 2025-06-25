@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import axios from "axios";
-import GoogleSignInButton from "./googleAuth/googlesigninbutton";
-
+import GoogleSignInButton from "../googleAuth/googlesigninbutton";
+import {useAuth} from './authcontext'
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "", role: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -14,21 +14,23 @@ const LoginForm = () => {
     setForm({ ...form, [name]: value });
   };
 
+  const { login } = useAuth();
   const togglePassword = () => setShowPassword(!showPassword);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:3000/api/auth/login", form);
+       if (res.data?.user) {
+  localStorage.setItem("token", res.data.token);
+  localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      if (res.data?.user) {
-        // ✅ Save to localStorage
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+  login();
+  alert(`Welcome ${res.data.user.fullName}`);
+  navigate("/");
+}
 
-        alert(`Welcome ${res.data.user.fullName}`);
-        navigate("/");
-      } else {
+       else {
         alert("Login successful");
       }
     } catch (err) {
@@ -110,6 +112,7 @@ const LoginForm = () => {
               </select>
             </div>
 
+            
             {/* Submit */}
             <div className="space-y-2 pt-2">
               <button type="submit" className="w-full bg-blue-600 text-white py-2 text-sm rounded-full hover:bg-blue-700 transition-colors">
