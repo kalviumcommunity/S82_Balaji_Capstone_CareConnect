@@ -161,4 +161,4 @@ include adding reviews, real-time availability tracking, and appointment booking
 #### Backend-deployment - https://s82-balaji-capstone-careconnect-2.onrender.com
 
 #### Frontend Deployment  
-[care-connect-507706.netlify.app](fantastic-beignet-659eee.netlify.app)
+[fantastic-beignet-659eee.netlify.app](fantastic-beignet-659eee.netlify.app)
