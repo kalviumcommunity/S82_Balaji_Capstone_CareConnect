@@ -68,7 +68,8 @@ const SignupForm = () => {
       formData.append("address[state]", form.state);
       formData.append("address[postalCode]", form.postalCode);
 
-      const res = await axios.post("http://localhost:3000/api/auth/signup", formData, {
+      const res = await axios.post("https://s82-balaji-capstone-careconnect-3.onrender.com/api/auth/signup", formData, 
+ {
         headers: {
           "Content-Type": "multipart/form-data",
         },
