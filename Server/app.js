@@ -6,7 +6,6 @@ const cors = require('cors');
 require('dotenv').config();
 
 const allowedOrigins = [
-  'http://localhost:5173',
   'https://extraordinary-kitsune-f05960.netlify.app'
 ];
 
