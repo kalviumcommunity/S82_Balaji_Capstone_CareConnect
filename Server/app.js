@@ -20,6 +20,11 @@ app.use(cors({
   },
   credentials: true
 }));
+app.use((req, res, next) => {
+  console.log("Incoming request from:", req.headers.origin);
+  next();
+});
+
 
 
 app.use(express.json());
