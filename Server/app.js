@@ -7,7 +7,7 @@ require('dotenv').config();
 
 app.use(cors({
   origin: [
-    'https://extraordinary-kitsune3-f05960.netlify.app',  // ✅ production
+    'https://extraordinary-kitsune4-f05960.netlify.app',  // ✅ production
     'http://localhost:5173'                               // ✅ dev frontend
   ],
   credentials: true
