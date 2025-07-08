@@ -1,0 +1,20 @@
+meta {
+  name: frrs
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://s82-balaji-capstone-careconnect-3.onrender.com/api/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "he@gmail.com",
+    "password": "ge",
+    "role": "doctor"
+  }
+  
+}
