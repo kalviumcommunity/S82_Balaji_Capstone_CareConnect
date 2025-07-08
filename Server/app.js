@@ -5,24 +5,13 @@ const router = require('./routes/index');
 const cors = require('cors');
 require('dotenv').config();
 
-const allowedOrigins = [
-  'https://extraordinary-kitsune-f05960.netlify.app'
-];
-
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS Not Allowed"));
-    }
-  },
+  origin: [
+    'https://extraordinary-kitsune1-f05960.netlify.app',  // ✅ production
+    'http://localhost:5173'                               // ✅ dev frontend
+  ],
   credentials: true
 }));
-app.use((req, res, next) => {
-  console.log("Incoming request from:", req.headers.origin);
-  next();
-});
 
 
 
