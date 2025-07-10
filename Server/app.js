@@ -8,8 +8,7 @@ const session = require('express-session');
 const passport = require('passport');
 require('./config/passport');
 const googleAuthRoutes = require('./routes/googleauth');
-app.use('/api/auth', googleAuthRoutes);
-
+app.enable('trust proxy');
 // Google OAuth setup
 
 app.use(session({
@@ -33,6 +32,7 @@ app.use(cors({
 
 
 app.use(express.json());
+app.use('/api/auth', googleAuthRoutes);
 app.use('/api', router);
 
 app.use('/uploads',express.static('uploads'));
