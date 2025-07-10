@@ -158,7 +158,6 @@ The Doctor Recommendation Website is a useful tool for users to find healthcare 
 follows a structured development plan to ensure smooth implementation and a high-quality user experience. Future improvements could 
 include adding reviews, real-time availability tracking, and appointment booking features.
 
-#### Backend-deployment - https://s82-balaji-capstone-careconnect-2.onrender.com
+#### Backend-deployment - https://s82-balaji-capstone-careconnect-3.onrender.com
 
-#### Frontend Deployment  
-https://fantastic-beignet-659eee.netlify.app/
+#### Frontend Deployment - https://extraordinary-kitsune4-f05960.netlify.app/
