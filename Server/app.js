@@ -4,6 +4,23 @@ const app = express();
 const router = require('./routes/index');
 const cors = require('cors');
 require('dotenv').config();
+const session = require('express-session');
+const passport = require('passport');
+require('./config/passport');
+const googleAuthRoutes = require('./routes/googleauth');
+app.use('/api/auth', googleAuthRoutes);
+
+// Google OAuth setup
+
+app.use(session({
+  secret: process.env.SECRET_KEY,
+  resave: false,
+  saveUninitialized: true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use(cors({
   origin: [
