@@ -210,7 +210,7 @@ exports.loginUser = async (req, res) => {
 
 exports.googleAuthCallback = async (req, res) => {
   try {
-    const { profile, user } = req.user;
+    const { profile, User } = req.user;
     const { displayName, emails } = profile;
 
     if (!emails || emails.length === 0) {
