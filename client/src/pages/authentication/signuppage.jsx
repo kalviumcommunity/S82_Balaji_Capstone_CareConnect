@@ -1,6 +1,6 @@
 // SignupForm.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import axios from "axios";
 import { useAuth } from './authcontext';
@@ -200,7 +200,8 @@ const SignupForm = () => {
             </div>
 
             <p className="text-center text-xs pt-2">
-              Already have an account? <a href="/login" className="text-blue-600 hover:underline">Login</a>
+              Already have an account? 
+              <Link to='/login'><a href="/login" className="text-blue-600 hover:underline">Login</a></Link>
             </p>
           </form>
         </div>
