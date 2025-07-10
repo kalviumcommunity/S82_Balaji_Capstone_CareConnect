@@ -8,7 +8,7 @@ const session = require('express-session');
 const passport = require('passport');
 require('./config/passport');
 const googleAuthRoutes = require('./routes/googleauth');
-
+app.enable('trust proxy');
 // Google OAuth setup
 
 app.use(session({
