@@ -207,10 +207,9 @@ exports.loginUser = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // 🌐 Google Auth Callback
 // ─────────────────────────────────────────────────────────────────────────────
-
 exports.googleAuthCallback = async (req, res) => {
   try {
-    const { profile, User } = req.user;
+    const { profile, user } = req.user;
     const { displayName, emails } = profile;
 
     if (!emails || emails.length === 0) {
@@ -222,7 +221,7 @@ exports.googleAuthCallback = async (req, res) => {
 
     let existingUser = await User.findOne({ email });
     if (!existingUser) {
-      existingUser = new User({ name, email, password: null, isActivated: true });
+      existingUser = new User({ fullName: name, email, password: "", isActivated: true });
       await existingUser.save();
     }
 
@@ -237,6 +236,7 @@ exports.googleAuthCallback = async (req, res) => {
 
     res.redirect(`https://extraordinary-kitsune4-f05960.netlify.app/google-success?token=${token}`);
   } catch (err) {
+    console.error("Google Auth Error:", err);
     res.status(500).json({ message: "Google Auth failed", error: err.message });
   }
 };
