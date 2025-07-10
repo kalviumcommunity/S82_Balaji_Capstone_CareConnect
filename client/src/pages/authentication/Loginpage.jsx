@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import axios from "axios";
 import GoogleSignInButton from "../googleAuth/googlesigninbutton";
@@ -121,12 +121,27 @@ const LoginForm = () => {
             </div>
 
             {/* Google Sign In */}
-            <GoogleSignInButton />
+            <div className="space-y-2 pt-1">
+              <button
+    type="button"
+    onClick={() => window.location.href = "https://s82-balaji-capstone-careconnect-3.onrender.com/api/auth/google"}
+    className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-2 text-sm rounded-full hover:bg-red-600 transition-colors"
+  >
+    <img
+      src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+      alt="Google Logo"
+      className="w-5 h-5"
+    />
+    Continue with Google
+  </button>
+</div>
 
             {/* Sign Up */}
             <p className="text-center text-xs pt-2">
               Don&apos;t have an account?{" "}
+              <Link to='/signup'>
               <a href="/signup" className="text-blue-600 hover:underline">Signup</a>
+              </Link>
             </p>
           </form>
         </div>
