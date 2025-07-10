@@ -4,7 +4,7 @@ const Address = require('./address'); // Import address schema
 const patientSchema = new mongoose.Schema({
   fullName: {
     type: String,
-    required: true,
+    required: false,
   },
   email: {
     type: String,
@@ -13,7 +13,7 @@ const patientSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: false,
   },
   doctors: [{
     type: mongoose.Schema.Types.ObjectId,
