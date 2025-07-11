@@ -84,7 +84,6 @@ const LoginForm = () => {
                   name="password"
                   value={form.password}
                   onChange={handleChange}
-                  required
                   placeholder="Enter Password"
                   className="w-full px-3 py-2 text-sm rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400 pl-9"
                 />
