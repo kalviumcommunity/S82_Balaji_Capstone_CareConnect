@@ -4,7 +4,6 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/authentication/Loginpage';
 import Signup from './pages/authentication/signuppage';
-import GoogleSuccess from './pages/googleAuth/googlesuccess';
 import Speciality from './pages/speciality';
 import NoDoctor from './pages/no-doctors';
 import Doctor from './pages/doctorpage'; // 🧑‍⚕️ This will handle filtered doctors
