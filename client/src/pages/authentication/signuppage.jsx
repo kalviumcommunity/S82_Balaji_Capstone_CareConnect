@@ -105,7 +105,7 @@ const SignupForm = () => {
             <div>
               <label htmlFor="fullName" className="text-sm mb-1 block">Full Name:</label>
               <div className="relative">
-                <input id="fullName" type="text" name="fullName" value={form.fullName} onChange={handleChange} required placeholder="Enter Full Name" className="w-full px-3 py-2 text-sm rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400 pl-9" />
+                <input id="fullName" type="text" name="fullName" value={form.fullName} onChange={handleChange} placeholder="Enter Full Name" className="w-full px-3 py-2 text-sm rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400 pl-9" />
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
               </div>
             </div>
@@ -113,7 +113,7 @@ const SignupForm = () => {
             <div>
               <label htmlFor="email" className="text-sm mb-1 block">Email ID:</label>
               <div className="relative">
-                <input id="email" type="email" name="email" value={form.email} onChange={handleChange} required placeholder="Enter Email" className="w-full px-3 py-2 text-sm rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400 pl-9" />
+                <input id="email" type="email" name="email" value={form.email} onChange={handleChange} placeholder="Enter Email" className="w-full px-3 py-2 text-sm rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400 pl-9" />
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
               </div>
             </div>
@@ -121,7 +121,7 @@ const SignupForm = () => {
             <div>
               <label htmlFor="password" className="text-sm mb-1 block">Password:</label>
               <div className="relative">
-                <input id="password" type={showPassword ? "text" : "password"} name="password" value={form.password} onChange={handleChange} required placeholder="Enter Password" className="w-full px-3 py-2 text-sm rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400 pl-9" />
+                <input id="password" type={showPassword ? "text" : "password"} name="password" value={form.password} onChange={handleChange} placeholder="Enter Password" className="w-full px-3 py-2 text-sm rounded-full border focus:outline-none focus:ring-2 focus:ring-blue-400 pl-9" />
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4 cursor-pointer" onClick={togglePassword} />
               </div>
             </div>
