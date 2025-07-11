@@ -219,11 +219,17 @@ exports.googleAuthCallback = async (req, res) => {
     const email = emails[0].value;
     const name = displayName;
 
-    let existingUser = await User.findOne({ email });
-    if (!existingUser) {
-      existingUser = new User({ fullName: name, email, password: "", isActivated: true });
-      await existingUser.save();
-    }
+    let existingUser = await Patient.findOne({ email });
+if (!existingUser) {
+  existingUser = new Patient({
+    fullName: name,
+    email,
+    password: "", 
+    isActivated: true
+  });
+  await existingUser.save({ validateBeforeSave: false });
+}
+
 
     const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
