@@ -219,18 +219,17 @@ exports.googleAuthCallback = async (req, res) => {
     const email = emails[0].value;
     const fullName = displayName || "Google User";
 
-    // Use Patient model here — don't use `User`
     let existingUser = await Patient.findOne({ email });
 
     if (!existingUser) {
       existingUser = new Patient({
         fullName,
         email,
-        password: "", // we are skipping validation so this won't error
-        isActivated: true
+        password: "", // Skip password
+        isActivated: true,
       });
 
-      // 🔥 This line is most important — skip validation!
+      // ✅ IMPORTANT LINE:
       await existingUser.save({ validateBeforeSave: false });
     }
 
@@ -242,13 +241,12 @@ exports.googleAuthCallback = async (req, res) => {
       sameSite: 'None',
       maxAge: 72 * 60 * 60 * 1000,
     });
-    console.log("Google Profile:", { fullName, email });
 
-    // Redirect with token
-    res.redirect(`https://extraordinary-kitsune4-f05960.netlify.app/google-success?token=${token}`);
+    res.redirect(`https://extraordinary-kitsune6-f05960.netlify.app/google-success?token=${token}`);
   } catch (err) {
     console.error("🔥 Google Auth Error:", err);
     res.status(500).json({ message: "Google Auth failed", error: err.message });
   }
 };
+
 

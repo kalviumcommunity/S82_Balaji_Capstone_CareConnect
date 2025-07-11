@@ -23,7 +23,7 @@ app.use(passport.session());
 
 app.use(cors({
   origin: [
-    'https://extraordinary-kitsune4-f05960.netlify.app',  // ✅ production
+    'https://extraordinary-kitsune6-f05960.netlify.app',  // ✅ production
     'http://localhost:5173'     // ✅ dev frontend
   ],
   credentials: true
