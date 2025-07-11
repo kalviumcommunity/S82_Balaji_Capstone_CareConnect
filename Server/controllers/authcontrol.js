@@ -242,6 +242,7 @@ exports.googleAuthCallback = async (req, res) => {
       sameSite: 'None',
       maxAge: 72 * 60 * 60 * 1000,
     });
+    console.log("Google Profile:", { fullName, email });
 
     // Redirect with token
     res.redirect(`https://extraordinary-kitsune4-f05960.netlify.app/google-success?token=${token}`);
