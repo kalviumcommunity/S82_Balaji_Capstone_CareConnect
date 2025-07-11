@@ -20,7 +20,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://s82-balaji-capstone-careconnect-3.onrender.com/api/auth/login", form);
+      const res = await axios.post("https://s82-balaji-capstone-careconnect-4.onrender.com/api/auth/login", form);
        if (res.data?.user) {
   localStorage.setItem("token", res.data.token);
   localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -123,7 +123,7 @@ const LoginForm = () => {
             <div className="space-y-2 pt-1">
               <button
     type="button"
-    onClick={() => window.location.href = "https://s82-balaji-capstone-careconnect-3.onrender.com/api/auth/google"}
+    onClick={() => window.location.href = "https://s82-balaji-capstone-careconnect-4.onrender.com/api/auth/google"}
     className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-2 text-sm rounded-full hover:bg-red-600 transition-colors"
   >
     <img
