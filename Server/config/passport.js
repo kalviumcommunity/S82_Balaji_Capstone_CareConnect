@@ -14,6 +14,7 @@ passport.use(new GoogleStrategy({
     const email = profile.emails[0].value;
     let user = await User.findOne({ email });
 
+    
     if (!user) {
       user = new User({ fullName: profile.displayName, email, isActivated: true });
       await user.save();
