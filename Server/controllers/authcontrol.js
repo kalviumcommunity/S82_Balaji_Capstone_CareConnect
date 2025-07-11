@@ -209,7 +209,7 @@ exports.loginUser = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 exports.googleAuthCallback = async (req, res) => {
   try {
-    const { profile, user } = req.user;
+    const { profile } = req.user;
     const { displayName, emails } = profile;
 
     if (!emails || emails.length === 0) {
@@ -220,16 +220,17 @@ exports.googleAuthCallback = async (req, res) => {
     const name = displayName;
 
     let existingUser = await Patient.findOne({ email });
-if (!existingUser) {
-  existingUser = new Patient({
-    fullName: name,
-    email,
-    password: "", 
-    isActivated: true
-  });
-  await existingUser.save({ validateBeforeSave: false });
-}
+    if (!existingUser) {
+      existingUser = new Patient({
+        fullName: name || "Google User",
+        email,
+        password: "",  // we're not using password login
+        isActivated: true
+      });
 
+      // ✅ Skip validation because password is required in schema
+      await existingUser.save({ validateBeforeSave: false });
+    }
 
     const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
