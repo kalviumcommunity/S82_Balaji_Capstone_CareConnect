@@ -9,7 +9,7 @@ const User = require('../models/patient.js');
 const upload = require('../middleware/multer.js');
 //const sendMail = require('../util/mail.js');
 require('dotenv').config();
-const SECRET = process.env.SECRET_KEY;
+// const SECRET = process.env.SECRET_KEY;
 const otpStore = new Map();
 
 
@@ -19,7 +19,7 @@ const otpStore = new Map();
 exports.getprofile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const role = req.user.role; // assume you store this in JWT or session
+    const role = req.user.role; 
     const address = req.user.address;
     if (role === 'doctor') {
       const doctor = await Doctor.findById(userId).populate('addresses');
@@ -58,7 +58,7 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id, role},SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user._id, role},process.env.SECRET_KEY, { expiresIn: '7d' });
     res.status(200).json({ token, user });
   } catch (err) {
     console.log(err);
@@ -192,7 +192,7 @@ exports.loginUser = async (req, res) => {
 
   if (!user.isActivated) return res.status(403).json({ message: 'Please verify your account via OTP' });
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '7d' });
 
   res.cookie('accesstoken', token, {
     httpOnly: true,
@@ -233,7 +233,7 @@ exports.googleAuthCallback = async (req, res) => {
       await existingUser.save({ validateBeforeSave: false });
     }
 
-    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: existingUser._id }, process.env.SECRET_KEY, { expiresIn: '7d' });
 
     res.cookie('accesstoken', token, {
       httpOnly: true,
@@ -242,7 +242,7 @@ exports.googleAuthCallback = async (req, res) => {
       maxAge: 72 * 60 * 60 * 1000,
     });
 
-    res.redirect(`https://extraordinary-kitsune6-f50960.netlify.app/google-success?token=${token}`);
+    res.redirect(`http://localhost:5173/google-success?token=${token}`);
   } catch (err) {
     console.error("🔥 Google Auth Error:", err);
     res.status(500).json({ message: "Google Auth failed", error: err.message });
