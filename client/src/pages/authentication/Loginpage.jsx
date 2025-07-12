@@ -123,7 +123,7 @@ const LoginForm = () => {
             <div className="space-y-2 pt-1">
               <button
     type="button"
-    onClick={() => window.location.href = "http://localhost:3000/api/auth/google"}
+    onClick={() => window.location.href = "http://s82-balaji-capstone-careconnect-4.onrender.com/api/auth/google"}
     className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-2 text-sm rounded-full hover:bg-red-600 transition-colors"
   >
     <img
