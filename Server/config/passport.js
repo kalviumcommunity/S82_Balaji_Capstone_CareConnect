@@ -30,3 +30,5 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((obj, done) => {
   done(null, obj);
 });
+// config/passport.js
+console.log('🛰️  GOOGLE_REDIRECT_URI =', process.env.GOOGLE_REDIRECT_URI);
