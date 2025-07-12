@@ -242,7 +242,7 @@ exports.googleAuthCallback = async (req, res) => {
       maxAge: 72 * 60 * 60 * 1000,
     });
 
-    res.redirect(`http://localhost:5173/google-success?token=${token}`);
+    res.redirect(`https://extraordinary-kitsune6-f50960.netlify.app/google-success?token=${token}`);
   } catch (err) {
     console.error("🔥 Google Auth Error:", err);
     res.status(500).json({ message: "Google Auth failed", error: err.message });
