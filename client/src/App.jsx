@@ -4,12 +4,12 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/authentication/Loginpage';
 import Signup from './pages/authentication/signuppage';
-import GoogleSuccess from './pages/googleAuth/googlesuccess';
 import Speciality from './pages/speciality';
 import NoDoctor from './pages/no-doctors';
 import Doctor from './pages/doctorpage'; // 🧑‍⚕️ This will handle filtered doctors
 import Profile from './pages/profile';
 import DoctorsPage from './pages/doctorpage';
+import GoogleSuccess from './pages/googleAuth/googlesuccess';
 function App() {
   return (
     <div>
@@ -23,6 +23,7 @@ function App() {
         {/* <Route path='/doctors/:specialty' element={<Doctor />} /> ✅ Dynamic specialty route */}
         <Route path='/profile' element={<Profile />} />
         <Route path="/doctors/:specialty" element={<DoctorsPage />} />
+        <Route path="/google-success" element={<GoogleSuccess />} />
       </Routes>
     </div>
   );

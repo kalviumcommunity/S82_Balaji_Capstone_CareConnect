@@ -14,7 +14,7 @@ function ProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("https://s82-balaji-capstone-careconnect-3.onrender.com/api/patientprofile/profile", {
+        const res = await axios.get("https://s82-balaji-capstone-careconnect-4.onrender.com/api/patientprofile/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
