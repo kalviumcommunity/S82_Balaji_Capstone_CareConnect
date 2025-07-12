@@ -10,6 +10,10 @@ router.get('/google', (req, res, next) => {
 }, passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
+    (req, res, next) => {
+        console.log("✅ Google Callback Route Hit");
+        next();
+    },
   passport.authenticate('google', { failureRedirect: '/' }),
   googleAuthCallback
 );
