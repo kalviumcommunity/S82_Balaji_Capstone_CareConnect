@@ -14,8 +14,14 @@ app.enable('trust proxy');
 app.use(session({
   secret: process.env.SECRET_KEY,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  proxy: true, // required for secure cookies on reverse proxies
+  cookie: {
+    secure: true,
+    sameSite: 'none'
+  }
 }));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
