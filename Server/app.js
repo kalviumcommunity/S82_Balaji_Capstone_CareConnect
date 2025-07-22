@@ -14,16 +14,21 @@ app.enable('trust proxy');
 app.use(session({
   secret: process.env.SECRET_KEY,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  proxy: true, // required for secure cookies on reverse proxies
+  cookie: {
+    secure: true,
+    sameSite: 'none'
+  }
 }));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 app.use(cors({
   origin: [
-    'https://extraordinary-kitsune4-f05960.netlify.app',  // ✅ production
+    'https://care-connect-2.netlify.app',  // ✅ production
     'http://localhost:5173'     // ✅ dev frontend
   ],
   credentials: true

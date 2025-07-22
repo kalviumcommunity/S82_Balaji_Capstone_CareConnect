@@ -8,14 +8,15 @@ console.log("Google Secret:", process.env.GOOGLE_CLIENT_SECRET);
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "https://s82-balaji-capstone-careconnect-3.onrender.com/api/auth/google/callback"
+    callbackURL: process.env.GOOGLE_REDIRECT_URI 
   },
   async (accessToken, refreshToken, profile, done) => {
     const email = profile.emails[0].value;
     let user = await User.findOne({ email });
 
+
     if (!user) {
-      user = new User({ name: profile.displayName, email, isActivated: true });
+      user = new User({ fullName: profile.displayName, email, isActivated: true });
       await user.save();
     }
 
@@ -29,3 +30,5 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((obj, done) => {
   done(null, obj);
 });
+// config/passport.js
+console.log('🛰️  GOOGLE_REDIRECT_URI =', process.env.GOOGLE_REDIRECT_URI);

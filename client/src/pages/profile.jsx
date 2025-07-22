@@ -5,16 +5,23 @@ import axios from "axios";
 import LoadingIcons from 'react-loading-icons'
 import load from '../assets/Animation - 1750351638911.gif'
 
+
+
 function ProfilePage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+
+const openModal = () => setShowModal(true);
+const closeModal = () => setShowModal(false);
+
 
   const token = localStorage.getItem("token");
   
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("https://s82-balaji-capstone-careconnect-3.onrender.com/api/patientprofile/profile", {
+        const res = await axios.get("https://s82-balaji-capstone-careconnect-4.onrender.com/api/patientprofile/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -56,6 +63,11 @@ function ProfilePage() {
         <Link to="/login" className="text-blue-600 underline">Login</Link>
       </div>
     );
+    let certificateUrl = null;
+if (user && user.role === "doctor" && user.doctor?.certificateUrl) {
+  certificateUrl = `https://s82-balaji-capstone-careconnect-4.onrender.com/${user.doctor.certificateUrl}`;
+}
+
     
   return (
     <div className="min-h-screen bg-gradient-to-b w-full from-blue-100 to-white p-8">
@@ -84,17 +96,55 @@ function ProfilePage() {
       <p><strong>Experience:</strong> {user.doctor.experience} years</p>
       <p><strong>Location:</strong> {user.doctor.location}</p>
       <p><strong>Verified:</strong> {user.doctor.isVerified ? "Yes" : "No"}</p>
-      <p>
-        <strong>Certificate:</strong>{" "}
-        <a
-          href={user.certificateUrl}
-          className="text-blue-600 underline"
-          target="_blank"
-          rel="noreferrer"
-        >
-          View Certificate
-        </a>
-      </p>
+      {user.doctor.certificateUrl ? (
+  <>
+    <p>
+      <strong>Certificate:</strong>{" "}
+      <button
+        onClick={openModal}
+        className="text-blue-600 underline hover:text-blue-800"
+      >
+        View Certificate
+      </button>
+    </p>
+
+    {/* Modal */}
+    {showModal && (
+      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+        <div className="bg-black p-6 rounded-lg max-w-3xl shadow-xl relative">
+          <button
+            onClick={closeModal}
+            className="absolute top-2 right-3 text-gray-600 hover:text-red-500 text-xl font-bold"
+          >
+            ×
+          </button>
+
+          {user.doctor.certificateUrl.endsWith(".pdf") ? (
+            <iframe
+              src={certificateUrl}
+              title="Doctor Certificate PDF"
+              className="w-[600px] h-[500px] border rounded"
+            />
+          ) : (
+            <img
+              src={certificateUrl}
+              alt="Doctor Certificate"
+              className="w-full max-h-[500px] object-contain rounded"
+            />
+          )}
+        </div>
+      </div>
+    )}
+  </>
+) : (
+  <p>
+    <strong>Certificate:</strong>{" "}
+    <span className="text-gray-500">Not uploaded</span>
+  </p>
+)}
+
+
+
     </div>
 
     <div className="mt-6 w-full max-w-md text-left">
