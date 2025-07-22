@@ -12,8 +12,12 @@ exports.getAllDoctors = async (req, res) => {
 
 // Create 
 exports.createDoctor = async (req, res) => {
-  try {
-    const newDoctor = new Doctor(req.body);
+   try {
+    const doctorData = req.body;
+    if (req.file) {
+      doctorData.certificate = req.file.path; // multer gives file path
+    }
+    const newDoctor = new Doctor(doctorData);
     await newDoctor.save();
     res.status(201).json(newDoctor);
   } catch (err) {
@@ -24,6 +28,9 @@ exports.createDoctor = async (req, res) => {
 exports.editDoctor = async(req,res)=>{
   try{
     const updates = req.body;
+     if (req.file) {
+      updates.certificate = req.file.path;
+    }
     const updatedDoctor = await Doctor.findByIdAndUpdate(
       req.params.id,
       updates,
