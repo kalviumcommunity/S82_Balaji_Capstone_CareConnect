@@ -143,30 +143,55 @@ function DoctorsPage() {
       </div>
 
       {showModal && selectedDoctor && (
-        <div className="fixed inset-0 z-50 bg-gray-300 bg-opacity-40 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl w-[90%] max-w-md relative shadow-2xl">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-2 right-3 text-gray-600 hover:text-red-500"
-            >
-              <X className="w-5 h-5" />
-            </button>
+  <div className="fixed inset-0 z-50 bg-gray-300 bg-opacity-40 flex items-center justify-center p-4">
+    <div className="bg-white p-6 rounded-xl w-full max-w-md relative shadow-2xl overflow-auto max-h-[90vh]">
+      <button
+        onClick={() => setShowModal(false)}
+        className="absolute top-2 right-3 text-gray-600 hover:text-red-500"
+      >
+        <X className="w-5 h-5" />
+      </button>
 
-            <img
-              src={selectedDoctor.image || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"}
-              alt={selectedDoctor.fullName}
-              className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-            />
-            <h2 className="text-xl font-bold text-center text-blue-700">{selectedDoctor.fullName}</h2>
-            <p className="text-sm text-center text-gray-600 mb-1">{selectedDoctor.specialization}</p>
-            <p className="text-sm text-center text-gray-500">{selectedDoctor.experience} years experience</p>
-            <p className="text-sm text-center text-gray-500">{selectedDoctor.location}</p>
-            <div className="mt-4 text-center">
-              <p className="text-xs text-gray-400">More features like appointment, certificate, etc. can be shown here</p>
-            </div>
-          </div>
+      <img
+        src={selectedDoctor.image || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"}
+        alt={selectedDoctor.fullName}
+        className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-2 border-blue-500"
+      />
+      <h2 className="text-xl font-bold text-center text-blue-700">{selectedDoctor.fullName}</h2>
+      <p className="text-sm text-center text-gray-600 mb-1">{selectedDoctor.title}</p>
+      <p className="text-sm text-center text-gray-600 mb-2">{selectedDoctor.specialization || "Lecturer of dermatology"}</p>
+
+      <div className="flex justify-between items-center mt-3 mb-2 px-8 text-yellow-500">
+        <span>⭐{selectedDoctor.rating || 4.5}</span>
+      </div>
+
+      <div className="text-xs text-center font-medium mb-3 px-4 text-gray-700">
+        <p className="font-semibold">{selectedDoctor.clinicName || "Samir Shehata Mohamed Clinic"}</p>
+        <p><strong>{selectedDoctor.city || "Assiut City"}:</strong> {selectedDoctor.address || "Yousry Rageb Street, Above Al Araby Juice"}</p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 text-xs text-center text-blue-700 mb-3 px-6">
+        <div>
+          <div className="text-lg">⏱</div>
+          <p>{selectedDoctor.waitingTime || "10 minutes"}</p>
         </div>
-      )}
+        <div>
+          <div className="text-lg">💰</div>
+          <p>{selectedDoctor.fee ? `${selectedDoctor.fee} EGP` : "650 EGP"}</p>
+        </div>
+        <div>
+          <div className="text-lg">📞</div>
+          <p>{selectedDoctor.phone || "01201111344"}</p>
+        </div>
+      </div>
+
+      <p className="text-xs text-gray-400 text-center mb-4">First In First Out</p>
+
+      
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
