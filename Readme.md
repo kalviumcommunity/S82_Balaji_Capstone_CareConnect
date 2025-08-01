@@ -157,7 +157,10 @@ node server.js  # Start the backend
 The Doctor Recommendation Website is a useful tool for users to find healthcare professionals efficiently.The project 
 follows a structured development plan to ensure smooth implementation and a high-quality user experience. Future improvements could 
 include adding reviews, real-time availability tracking, and appointment booking features.
+<<<<<<< HEAD
 
 #### Backend-deployment - https://s82-balaji-capstone-careconnect-3.onrender.com
 
 #### Frontend Deployment - https://extraordinary-kitsune4-f05960.netlify.app/
+=======
+>>>>>>> AI-chatbot

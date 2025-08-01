@@ -4,7 +4,11 @@ const Address = require('./address'); // Import address schema
 const doctorSchema = new mongoose.Schema({
   fullName: {
     type: String,
+<<<<<<< HEAD
     required: true,
+=======
+    required: false,
+>>>>>>> AI-chatbot
   },
   email: { 
     type: String, 
@@ -13,7 +17,11 @@ const doctorSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+<<<<<<< HEAD
     required: true,
+=======
+    required: false,
+>>>>>>> AI-chatbot
   },
   specialization: {
     type: String,

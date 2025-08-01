@@ -1,0 +1,29 @@
+meta {
+  name: http://localhost:3000/api/auth
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3000/api/doctors/6854247c50c3bc09abc37deb/appointments
+  body: json
+  auth: bearer
+}
+
+headers {
+  : 
+}
+
+auth:bearer {
+  token: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWMzNjViNjE2ZjA4OGI4OWE1N2MzNSIsInJvbGUiOiJwYXRpZW50IiwiaWF0IjoxNzQ2Njc5Mzg3LCJleHAiOjE3NDY3NjU3ODd9.NhrXFqlnt8LPvqq_luZToA4Zt0-ho0HI8huWM8UABz8
+}
+
+body:json {
+  {
+    "doctorId": "6847f43cd97ce114ace0f505",
+    "patientId": "686caf7ec68ef420c7289622",
+    "date": "2025-07-24",
+    "time": "10:30"
+  }
+  
+}

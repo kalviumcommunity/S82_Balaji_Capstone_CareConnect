@@ -3,6 +3,9 @@ const router = express.Router();
 const doctorController = require('../controllers/doctorcontrol');
 const { verifyToken } = require('../middleware/authmiddleware');
 
+// Added route from AI-chatbot branch
+router.get("/:doctorId/appointments", doctorController.getAppointmentsForDoctor);
+
 // All Doctors
 router.get('/get', doctorController.getAllDoctors);
 

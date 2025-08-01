@@ -1,6 +1,7 @@
 const Doctor = require('../models/doctor');
+const Appointment = require('../models/appointment');
 
-// Get 
+// Get all doctors
 exports.getAllDoctors = async (req, res) => {
   try {
     const doctors = await Doctor.find();
@@ -10,37 +11,41 @@ exports.getAllDoctors = async (req, res) => {
   }
 };
 
-// Create 
+// Create doctor
 exports.createDoctor = async (req, res) => {
   try {
-    const newDoctor = new Doctor(req.body);
+    const doctorData = req.body;
+    if (req.file) {
+      doctorData.certificate = req.file.path; // multer gives file path
+    }
+    const newDoctor = new Doctor(doctorData);
     await newDoctor.save();
     res.status(201).json(newDoctor);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
-//post
-exports.editDoctor = async(req,res)=>{
-  try{
+
+// Edit doctor
+exports.editDoctor = async (req, res) => {
+  try {
     const updates = req.body;
+    if (req.file) {
+      updates.certificate = req.file.path;
+    }
     const updatedDoctor = await Doctor.findByIdAndUpdate(
       req.params.id,
       updates,
-      {new:true}
-    )
-    if(!updatedDoctor)
-    {
-      return res.status(400).json({Error:'Doctor Not Found'})
+      { new: true }
+    );
+    if (!updatedDoctor) {
+      return res.status(400).json({ Error: 'Doctor Not Found' });
     }
-    res.status(200).json({updatedDoctor})
+    res.status(200).json({ updatedDoctor });
+  } catch (err) {
+    res.status(400).send({ message: err });
   }
-  catch(err)
-  {
-    res.status(400).send({message:err});
-  }
-}
-
+};
 
 // Get doctors by specialization
 exports.getDoctorsBySpecialization = async (req, res) => {
@@ -56,6 +61,7 @@ exports.getDoctorsBySpecialization = async (req, res) => {
   }
 };
 
+// Delete doctor
 exports.deleteDoctor = async (req, res) => {
   const doctorId = req.params.id;
 
@@ -75,3 +81,14 @@ exports.deleteDoctor = async (req, res) => {
   }
 };
 
+// Get appointments for a specific doctor
+exports.getAppointmentsForDoctor = async (req, res) => {
+  try {
+    const doctorId = req.params.doctorId;
+    const appointments = await Appointment.find({ doctor: doctorId })
+      .populate("patient", "fullName email");
+    res.json(appointments);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch appointments" });
+  }
+};
