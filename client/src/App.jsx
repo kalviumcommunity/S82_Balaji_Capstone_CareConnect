@@ -10,6 +10,10 @@ import Doctor from './pages/doctorpage'; // 🧑‍⚕️ This will handle filte
 import Profile from './pages/profile';
 import DoctorsPage from './pages/doctorpage';
 import GoogleSuccess from './pages/googleAuth/googlesuccess';
+import BookAppointment from './pages/appointmentbook';
+import DoctorAppointments from './pages/DoctorAppointments'
+import DoctorDashboard from './pages/doctordashboard';
+import AiChatbot from './pages/aiintegration/aichatbot';
 function App() {
   return (
     <div>
@@ -23,7 +27,11 @@ function App() {
         {/* <Route path='/doctors/:specialty' element={<Doctor />} /> ✅ Dynamic specialty route */}
         <Route path='/profile' element={<Profile />} />
         <Route path="/doctors/:specialty" element={<DoctorsPage />} />
+        <Route path="/book/:doctorId" element={<BookAppointment />} />
         <Route path="/google-success" element={<GoogleSuccess />} />
+        <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+        <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+        <Route path='/ai-chat' element={<AiChatbot/>}/>
       </Routes>
     </div>
   );

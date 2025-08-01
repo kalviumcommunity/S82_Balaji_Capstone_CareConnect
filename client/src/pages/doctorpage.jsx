@@ -13,7 +13,7 @@ function DoctorsPage() {
 
   const fetchDoctors = async () => {
     try {
-      const res = await axios.get(`https://s82-balaji-capstone-careconnect-4.onrender.com/api/doctors/specialty/${specialty}`);
+      const res = await axios.get(`http://localhost:3000/api/doctors/specialty/${specialty}`);
       setDoctors(res.data || []);
     } catch (err) {
       console.error('Failed to fetch doctors', err);
@@ -24,7 +24,7 @@ function DoctorsPage() {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const res = await axios.get('https://s82-balaji-capstone-careconnect-4.onrender.com/api/patients/profile', {
+        const res = await axios.get('http://localhost:3000/api/patients/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -44,7 +44,7 @@ function DoctorsPage() {
   const handleDelete = async (id) => {
     const token = localStorage.getItem('token');
     try {
-      await axios.delete(`https://s82-balaji-capstone-careconnect-4.onrender.com/api/doctors/${id}`, {
+      await axios.delete(`http://localhost:3000/api/doctors/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -187,6 +187,14 @@ function DoctorsPage() {
 
       <p className="text-xs text-gray-400 text-center mb-4">First In First Out</p>
 
+      <div className="text-center">
+  <Link
+    to={`/book/${selectedDoctor._id}`}
+    className="inline-block bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition"
+  >
+    Book Appointment
+  </Link>
+</div>
       
     </div>
   </div>

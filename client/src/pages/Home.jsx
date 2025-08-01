@@ -8,6 +8,8 @@ import '../index.css';
 import Doctor from './../assets/doctor.png';
 import Logo from './../assets/FullLogo.jpg';
 import { motion, AnimatePresence } from 'framer-motion';
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 function Home() {
   const { isLoggedIn, logout } = useAuth();
@@ -21,6 +23,11 @@ function Home() {
 
 
   useEffect(() => {
+    AOS.init({
+    duration: 1000, // Animation duration in ms
+    once: true,     // Whether animation should happen only once
+    easing: 'ease-in-out',
+  });
     if (scrollToContact && contactRef.current) {
       contactRef.current.scrollIntoView({ behavior: 'smooth' });
       setScrollToContact(false);
@@ -128,128 +135,140 @@ const maxIndex = Math.max(0, Math.ceil(filteredSpecialties.length / itemsPerPage
 
       {/* Hero Section */}
       <section
-        className="relative min-h-[80vh] bg-cover bg-center flex items-center"
-        style={{
-          backgroundImage: "url('https://img.freepik.com/free-photo/blurred-abstract-background-interior-view-looking-out-toward-empty-office-lobby-entrance-doors-glass-curtain-wall-with-frame_1339-6363.jpg?semt=ais_items_boosted&w=740')"
-        }}
-      >
-        <div className="absolute inset-0 bg-opacity-60 backdrop-blur-sm"></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-12 w-full pt-12 pb-4">
-          <div className="md:w-1/2 text-center md:text-left text-gray-900">
-            <h2 className="text-5xl font-bold mb-6 leading-tight">
-              Find the Right<br />Doctor, Anytime,<br />Anywhere!
-            </h2>
-            <Link to="/doctors">
-              <button className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-full text-lg hover:bg-blue-700">
-                Book Now
-              </button>
-            </Link>
-          </div>
-          <img className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl rounded-lg" src={Doctor} alt="Doctor" />
-        </div>
-      </section>
+  className="relative min-h-[80vh] bg-cover bg-center flex items-center"
+  style={{
+    backgroundImage: "url('https://img.freepik.com/free-photo/blurred-abstract-background-interior-view-looking-out-toward-empty-office-lobby-entrance-doors-glass-curtain-wall-with-frame_1339-6363.jpg?semt=ais_items_boosted&w=740')"
+  }}
+>
+  <div className="absolute inset-0 bg-opacity-60 backdrop-blur-sm"></div>
+  <div
+    className="relative z-10 max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-12 w-full pt-12 pb-4"
+    data-aos="fade-up"
+  >
+    <div className="md:w-1/2 text-center md:text-left text-gray-900">
+      <h2 className="text-5xl font-bold mb-6 leading-tight">
+        Find the Right<br />Doctor, Anytime,<br />Anywhere!
+      </h2>
+      <Link to="/doctors">
+        <button className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-full text-lg hover:bg-blue-700">
+          Book Now
+        </button>
+      </Link>
+    </div>
+    <img
+      className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl rounded-lg"
+      src={Doctor}
+      alt="Doctor"
+      
+    />
+  </div>
+</section>
+
 
       {/* Specialties Section */}
 
 
 {/* Specialties Section (Animated) */}
-<section ref={specialref} className="w-full py-12 bg-white">
-  <div className="max-w-7xl mx-auto px-4">
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-      <div>
-        <h2 className="text-3xl font-bold text-gray-800">Search by Speciality</h2>
-        <p className="text-sm text-gray-500 mt-1">Find doctors based on your needs</p>
-      </div>
-      <input
-        type="text"
-        placeholder="Search specialties..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full md:w-80 px-4 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-    </div>
-
-    <div className="grid place-items-center h-64">
-  <div className="relative w-full overflow-hidden">
-    {/* Left Arrow */}
-    {visibleIndex > 0 && (
-  <button
-    onClick={() => {
-  if (visibleIndex > 0) {
-    setVisibleIndex((prev) => prev - 1);
-  }
-}}
-
-    className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-white border rounded-full shadow hover:bg-gray-100"
-  >
-    <CgArrowLeft className="text-xl" />
-  </button>
-)}
-
-
-    {/* Cards Container */}
-    <div className="overflow-hidden">
-      <div
-        className="flex transition-transform duration-500 ease-in-out"
-        style={{
-          transform: `translateX(-${visibleIndex * 25}%)`,
-          width: `${filteredSpecialties.length * 25}%`
-        }}
+ <section
+        ref={specialref}
+        className="w-full py-16 bg-gradient-to-b from-white to-sky-50"
+        data-aos="fade-up"
       >
-        {filteredSpecialties.map((specialty, index) => (
-          <div key={index} className="w-1/4 p-2">
-            <div className="bg-sky-50 hover:bg-sky-100 transition shadow-sm hover:shadow-md rounded-xl p-6 text-center h-full">
-              <Link to={specialty.link}>
-                <div className="text-4xl mb-2">{specialty.icon}</div>
-                <h3 className="text-base font-semibold text-gray-800">
-                  {specialty.title}
-                </h3>
-              </Link>
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-800">Find Doctors by Speciality</h2>
+              <p className="text-gray-500 mt-1">Choose from top specialties tailored for your health needs.</p>
+            </div>
+
+            <div className="relative w-full md:w-80">
+              <input
+                type="text"
+                placeholder="Search specialties..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-5 py-3 rounded-full border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </div>
-        ))}
-      </div>
-    </div>
 
-    {/* Right Arrow */}
-    {visibleIndex < maxIndex && (
-  <button
-    onClick={() => {
-  if (visibleIndex < maxIndex) {
-    setVisibleIndex((prev) => prev + 2);
-  }
-}}
+          {/* Carousel */}
+          <div className="relative">
+            {visibleIndex > 0 && (
+              <button
+                onClick={() => setVisibleIndex((prev) => Math.max(0, prev - 1))}
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white p-3 rounded-full shadow hover:bg-gray-100"
+              >
+                <CgArrowLeft className="text-xl" />
+              </button>
+            )}
 
-    className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-white border rounded-full shadow hover:bg-gray-100"
-  >
-    <CgArrowRight className="text-xl" />
-  </button>
-)}
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{
+                  transform: `translateX(-${visibleIndex * 25}%)`,
+                  width: `${filteredSpecialties.length * 25}%`
+                }}
+              >
+                {filteredSpecialties.map((specialty, index) => (
+                  <div
+                    key={index}
+                    className="w-1/4 px-3"
+                  >
+                    <Link to={specialty.link}>
+                      <div className="bg-white rounded-2xl shadow hover:shadow-lg transition transform hover:scale-105 p-6 text-center">
+                        <div className="text-4xl mb-3">{specialty.icon}</div>
+                        <h3 className="text-lg font-semibold text-gray-800">{specialty.title}</h3>
+                      </div>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-  </div>
+            {visibleIndex < maxIndex && (
+              <button
+                onClick={() => setVisibleIndex((prev) => Math.min(maxIndex, prev + 1))}
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white p-3 rounded-full shadow hover:bg-gray-100"
+              >
+                <CgArrowRight className="text-xl" />
+              </button>
+            )}
+          </div>
+
+          {filteredSpecialties.length === 0 && (
+            <p className="text-center text-gray-500 mt-6">No specialties found.</p>
+          )}
+
+          <div className="text-center mt-10">
+            <Link to="/speciality">
+              <button className="px-8 py-3 bg-blue-600 text-white rounded-full text-lg hover:bg-blue-700 shadow-lg">
+                View All Specialties
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
 
 
-
-
-      {filteredSpecialties.length === 0 && (
-        <p className="text-gray-500 text-center">No specialties found.</p>
-      )}
-    </div>
-
-    <div className="mt-10 text-center">
-      <Link to="/speciality">
-        <button className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition duration-200">
-          More Specialties
-        </button>
-      </Link>
-    </div>
-  </div>
-</section>
 
 {/* Top Doctors */}
-<section className="w-full py-16 bg-gray-50">
+<section className="w-full py-16 bg-gray-50" data-aos="fade-up">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+    <h2
+      className="text-3xl font-bold text-center text-gray-800 mb-12"
+      data-aos="fade-down"
+      data-aos-duration="800"
+    >
       Meet Our Top Doctors
     </h2>
 
@@ -283,19 +302,32 @@ const maxIndex = Math.max(0, Math.ceil(filteredSpecialties.length / itemsPerPage
         <div
           key={i}
           className="bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-8 flex flex-col items-center text-center"
+          data-aos="zoom-in"
+          data-aos-delay={i * 200}   // Staggered animation
+          data-aos-duration="800"
         >
           <img
             src={doctor.image}
             alt={doctor.name}
             className="w-24 h-24 rounded-full mb-4 border-4 border-sky-100 shadow-md"
+            data-aos="flip-left"
+            data-aos-delay={i * 200 + 100}
           />
-          <h3 className="text-xl font-semibold text-gray-900 mb-1">{doctor.name}</h3>
+          <h3
+            className="text-xl font-semibold text-gray-900 mb-1"
+            data-aos="fade-up"
+            data-aos-delay={i * 200 + 150}
+          >
+            {doctor.name}
+          </h3>
           <p className="text-sm text-gray-600 mb-1">{doctor.specialty}</p>
           <p className="text-xs text-gray-500 mb-2">{doctor.experience}</p>
           <p className="text-sm text-gray-700 mb-4">{doctor.description}</p>
           <button
             onClick={() => alert('Booking feature coming soon!')}
             className="mt-auto px-5 py-2 bg-sky-600 text-white text-sm rounded-full hover:bg-sky-700 transition"
+            data-aos="fade-up"
+            data-aos-delay={i * 200 + 200}
           >
             Book Appointment
           </button>
@@ -307,20 +339,33 @@ const maxIndex = Math.max(0, Math.ceil(filteredSpecialties.length / itemsPerPage
 
 
 
-{/* How It Works + Testimonials + Stats */}
-<section className="w-full py-20 bg-gray-50">
+
+<section className="w-full py-20 bg-gray-50" data-aos="fade-up">
   <div className="max-w-7xl mx-auto px-6">
     <div className="bg-white shadow-2xl rounded-3xl p-10 md:p-14 grid grid-cols-1 md:grid-cols-2 gap-12">
-
+      
       {/* Testimonials */}
-      <div className="flex flex-col">
-        <h3 className="text-sm uppercase text-sky-600 font-semibold tracking-wider mb-2">
+      <div className="flex flex-col" data-aos="fade-right" data-aos-duration="1000">
+        <h3
+          className="text-sm uppercase text-sky-600 font-semibold tracking-wider mb-2"
+          data-aos="fade-down"
+          data-aos-delay="100"
+        >
           Testimonials
         </h3>
-        <h2 className="text-3xl font-bold text-gray-900 mb-6">
+        <h2
+          className="text-3xl font-bold text-gray-900 mb-6"
+          data-aos="fade-down"
+          data-aos-delay="200"
+        >
           What People Say
         </h2>
-        <div className="relative bg-gray-100 p-6 rounded-xl shadow-sm">
+        <div
+          className="relative bg-gray-100 p-6 rounded-xl shadow-sm"
+          data-aos="zoom-in"
+          data-aos-delay="300"
+          data-aos-duration="800"
+        >
           <svg
             className="absolute top-4 left-4 w-6 h-6 text-sky-400"
             fill="currentColor"
@@ -331,7 +376,11 @@ const maxIndex = Math.max(0, Math.ceil(filteredSpecialties.length / itemsPerPage
           <p className="text-base text-gray-700 leading-relaxed pl-10">
             “This platform helped me find the right specialist within minutes. It's user-friendly, reliable, and extremely helpful!”
           </p>
-          <div className="flex items-center mt-6">
+          <div
+            className="flex items-center mt-6"
+            data-aos="fade-up"
+            data-aos-delay="400"
+          >
             <img
               src="https://i.pravatar.cc/40?img=5"
               alt="User Avatar"
@@ -346,65 +395,44 @@ const maxIndex = Math.max(0, Math.ceil(filteredSpecialties.length / itemsPerPage
       </div>
 
       {/* Stats */}
-      <div className="flex flex-col">
-        <h3 className="text-sm uppercase text-sky-600 font-semibold tracking-wider mb-2">
+      <div className="flex flex-col" data-aos="fade-left" data-aos-duration="1000">
+        <h3
+          className="text-sm uppercase text-sky-600 font-semibold tracking-wider mb-2"
+          data-aos="fade-down"
+          data-aos-delay="100"
+        >
           Stats
         </h3>
-        <h2 className="text-3xl font-bold text-gray-900 mb-6">
+        <h2
+          className="text-3xl font-bold text-gray-900 mb-6"
+          data-aos="fade-down"
+          data-aos-delay="200"
+        >
           Platform at a Glance
         </h2>
         <div className="grid grid-cols-2 gap-x-8 gap-y-8">
-          <div className="flex items-start gap-4">
-            <div className="text-sky-600">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zM6 20v-1c0-2.21 1.79-4 4-4h4c2.21 0 4 1.79 4 4v1H6z" />
-              </svg>
+          {[
+            { icon: "👨‍⚕️", value: "1.2K+", label: "Doctors Registered" },
+            { icon: "🙌", value: "10K+", label: "Users Helped" },
+            { icon: "🩺", value: "50+", label: "Specialties Covered" },
+            { icon: "⭐", value: "4.9/5", label: "Avg. User Rating" },
+          ].map((item, index) => (
+            <div
+              key={index}
+              className="flex items-start gap-4"
+              data-aos="flip-up"
+              data-aos-delay={300 + index * 150} // Staggered effect
+              data-aos-duration="800"
+            >
+              <div className="text-sky-600 text-3xl">{item.icon}</div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{item.value}</p>
+                <p className="text-sm text-gray-600">{item.label}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">1.2K+</p>
-              <p className="text-sm text-gray-600">Doctors Registered</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4">
-            <div className="text-sky-600">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path d="M3 18v-6a9 9 0 0118 0v6" />
-                <path d="M21 18H3" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">10K+</p>
-              <p className="text-sm text-gray-600">Users Helped</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4">
-            <div className="text-sky-600">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path d="M9.75 3a1 1 0 011 1v16a1 1 0 01-1 1H4.75a1 1 0 01-1-1V4a1 1 0 011-1h5zM19.25 3a1 1 0 011 1v16a1 1 0 01-1 1h-5a1 1 0 01-1-1V4a1 1 0 011-1h5z" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">50+</p>
-              <p className="text-sm text-gray-600">Specialties Covered</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4">
-            <div className="text-sky-600">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path d="M12 20h.01M12 4a8 8 0 100 16 8 8 0 000-16z" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">4.9/5</p>
-              <p className="text-sm text-gray-600">Avg. User Rating</p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
-
     </div>
   </div>
 </section>
@@ -452,6 +480,31 @@ const maxIndex = Math.max(0, Math.ceil(filteredSpecialties.length / itemsPerPage
           </div>
         </div>
       </footer>
+
+      {/* AI Assistant Sticky Icon */}
+<div className="fixed bottom-6 right-6 z-50">
+  <button
+    onClick={() => navigate('/ai-chat')} // or open modal
+    className="bg-blue-600 hover:bg-blue-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition transform"
+    title="AI Assistant"
+  >
+    {/* You can use any icon here */}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="w-7 h-7"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 6v6h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  </button>
+</div>
     </div>
   );
 }

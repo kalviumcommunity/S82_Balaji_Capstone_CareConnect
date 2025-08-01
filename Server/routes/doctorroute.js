@@ -3,6 +3,8 @@ const router = express.Router();
 const doctorController = require('../controllers/doctorcontrol');
 const { verifyToken } = require('../middleware/authmiddleware');
 
+router.get("/:doctorId/appointments", doctorController.getAppointmentsForDoctor);
+
 // All Doctors
 router.get('/get', doctorController.getAllDoctors);
 

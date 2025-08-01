@@ -4,12 +4,15 @@ import { Mail, Lock, ChevronLeft } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "./authcontext";
 import Logo from "../../assets/FullLogo.jpg"; // Your logo path
+import {jwtDecode} from "jwt-decode";
+
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "", role: "" });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+ 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,19 +25,37 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "https://s82-balaji-capstone-careconnect-4.onrender.com/api/auth/login",
-        form  
+        "http://localhost:3000/api/auth/login",
+        form, { withCredentials: true }
       );
 
       if (res.data?.user) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        login();
-        alert(`Welcome ${res.data.user.fullName}`);
-        navigate("/");
-      } else {
-        alert("Login successful");
-      }
+  const rawUser = res.data.user;
+  const token = res.data.token;
+      const decoded = jwtDecode(token);
+  const user = {
+  ...rawUser,
+  role: decoded.role || "patient",
+};
+
+
+  localStorage.setItem("token", res.data.token);
+  localStorage.setItem("user", JSON.stringify(user));
+  login(); // from context?
+  alert(`Welcome ${user.fullName}`);
+console.log("Logged in user:", user.role);
+console.log("Login API response:", res.data);
+
+
+  if (user.role === "doctor") {
+  navigate("/doctor/dashboard");
+} else {
+  navigate("/");
+}
+} else {
+  alert("Login failed.");
+}
+
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     }

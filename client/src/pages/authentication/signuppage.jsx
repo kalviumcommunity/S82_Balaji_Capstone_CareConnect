@@ -65,7 +65,7 @@ const SignupForm = () => {
       }
 
       const res = await axios.post(
-        "https://s82-balaji-capstone-careconnect-4.onrender.com/api/auth/signup",
+        "http://localhost:3000/api/auth/signup",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

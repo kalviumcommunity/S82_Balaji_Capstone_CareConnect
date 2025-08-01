@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const specialties = [
   { title: 'Pulmonologist', icon: '🫁', link: '/doctors/pulmonologist' },
@@ -18,6 +20,10 @@ const specialties = [
 function SpecialityPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
+  useEffect(() => {
+    AOS.init({ duration: 1000, once: true, offset: 50 });
+  }, []);
+
   const filteredSpecialties = specialties.filter((specialty) =>
     specialty.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -25,7 +31,7 @@ function SpecialityPage() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-sky-100 to-white px-4 py-8">
       {/* Header */}
-      <div className="flex items-center mb-6">
+      <div className="flex items-center mb-6" data-aos="fade-down">
         <Link to="/" className="flex items-center text-blue-700 font-semibold hover:underline">
           <ChevronLeft className="w-5 h-5 mr-1" />
           Back to Home
@@ -33,13 +39,15 @@ function SpecialityPage() {
       </div>
 
       {/* Title */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-8" data-aos="fade-up">
         <h1 className="text-4xl font-bold text-blue-800 mb-2">Search by Speciality</h1>
-        <p className="text-gray-600">Choose a speciality or search to find the right doctor for your needs.</p>
+        <p className="text-gray-600">
+          Choose a speciality or search to find the right doctor for your needs.
+        </p>
       </div>
 
       {/* Search Input */}
-      <div className="flex justify-center mb-10">
+      <div className="flex justify-center mb-10" data-aos="zoom-in">
         <input
           type="text"
           placeholder="Search by speciality..."
@@ -55,7 +63,9 @@ function SpecialityPage() {
           filteredSpecialties.map((specialty, index) => {
             const content = (
               <div
-                className="bg-white p-6 rounded-xl shadow hover:shadow-md transition duration-300 text-center cursor-pointer"
+                className="bg-white p-6 rounded-xl shadow hover:shadow-lg transform hover:scale-105 transition duration-300 text-center cursor-pointer"
+                data-aos="flip-up"
+                data-aos-delay={index * 100} // staggered animation
               >
                 <div className="text-4xl mb-3">{specialty.icon}</div>
                 <h3 className="text-lg font-medium text-gray-800">{specialty.title}</h3>
@@ -71,7 +81,7 @@ function SpecialityPage() {
             );
           })
         ) : (
-          <div className="text-center col-span-full text-gray-600">
+          <div className="text-center col-span-full text-gray-600" data-aos="fade-in">
             No results found for "<strong>{searchTerm}</strong>"
           </div>
         )}

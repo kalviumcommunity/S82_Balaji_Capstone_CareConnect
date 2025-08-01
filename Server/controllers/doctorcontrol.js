@@ -1,5 +1,5 @@
 const Doctor = require('../models/doctor');
-
+const Appointment = require('../models/appointment')
 // Get 
 exports.getAllDoctors = async (req, res) => {
   try {
@@ -82,3 +82,14 @@ exports.deleteDoctor = async (req, res) => {
   }
 };
 
+// controllers/appointments.js
+exports.getAppointmentsForDoctor = async (req, res) => {
+  try {
+    const doctorId = req.params.doctorId;
+    const appointments = await Appointment.find({ doctor: doctorId })
+      .populate("patient", "fullName email");
+    res.json(appointments);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch appointments" });
+  }
+};
