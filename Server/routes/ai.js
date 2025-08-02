@@ -6,7 +6,7 @@ const { verifyToken } = require('../middleware/authmiddleware');
 
 // ✅ AI Route (Protected)
 // Remove verifyToken and authorizeRoles from AI route
-router.post('/api/ai', async (req, res) => {
+router.post('/ai', async (req, res) => {
   try {
     const { model, messages } = req.body;
 
