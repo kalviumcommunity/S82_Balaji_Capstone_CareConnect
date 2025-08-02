@@ -33,7 +33,7 @@ app.use(cors({
   origin: [
     'https://capstone-careconnect1.netlify.app',
     'https://magical-scone-a26a49.netlify.app',
-    'https://silver-mandazi-b73e3b.netlify.app/',
+    'https://silver-mandazi-b73e3b.netlify.app',
     'http://localhost:5173'
   ],
   credentials: true
@@ -47,6 +47,7 @@ app.post('/api/ai', async (req, res) => {
     if (!messages) {
       return res.status(400).json({ error: "Messages are required" });
     }
+    console.log("OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
 
     // ✅ Force free model
     const response = await axios.post(
@@ -59,7 +60,7 @@ app.post('/api/ai', async (req, res) => {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`, // OpenRouter API key
-          "HTTP-Referer": "https://capstone-careconnect.netlify.app", // Required by OpenRouter
+          "HTTP-Referer": "https://capstone-careconnect1.netlify.app", // Required by OpenRouter
           "X-Title": "CareConnect AI Chatbot"
         }
       }
