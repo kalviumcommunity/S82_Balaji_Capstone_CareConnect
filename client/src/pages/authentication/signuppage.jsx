@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-// SignupForm.jsx
-import React, { useState } from "react";
-import { useNavigate,Link } from "react-router-dom";
-import { Mail, Lock } from "lucide-react";
-import axios from "axios";
-import { useAuth } from './authcontext';
-
-=======
 import  { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import axios from "axios";
 import { useAuth } from './authcontext';
 import Logo from '../../assets/FullLogo.jpg'; // Assuming you have a logo image
->>>>>>> AI-chatbot
 const SignupForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
