@@ -15,15 +15,16 @@ router.post('/ai', async (req, res) => {
     }
 
     const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      { model, messages },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-        }
-      }
-    );
+  "https://openrouter.ai/api/v1/chat/completions",
+  { model, messages },
+  {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`
+    }
+  }
+);
+
 
     res.json(response.data);
   } catch (error) {
