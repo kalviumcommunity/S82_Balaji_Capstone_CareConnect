@@ -9,6 +9,7 @@ const mainRouter = require('./routes/index');
 const googleAuthRoutes = require('./routes/googleauth');
 const profileRoutes = require('./routes/profileroutes');
 const { verifyToken, authorizeRoles } = require('./middleware/authmiddleware');
+const aiRoute = require('./routes/ai');
 require('./config/passport');
 
 const app = express();
