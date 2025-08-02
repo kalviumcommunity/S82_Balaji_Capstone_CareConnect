@@ -44,35 +44,30 @@ app.use(express.json());
 app.post('/api/ai', async (req, res) => {
   try {
     const { messages } = req.body;
-
     if (!messages) {
       return res.status(400).json({ error: "Messages are required" });
     }
+
     console.log("OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
 
-    // ✅ Force free model
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "mistralai/mistral-7b-instruct", // Free model
-        messages
+        model: "mistralai/mistral-7b-instruct",
+        messages: messages
       },
       {
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`, // OpenRouter API key
-          "HTTP-Referer": "https://capstone-careconnect1.netlify.app", // Required by OpenRouter
-          "X-Title": "CareConnect AI Chatbot"
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json"
         }
       }
     );
 
     res.json(response.data);
   } catch (error) {
-    console.error("AI Route Error:", error.response?.data || error.message);
-    res.status(error.response?.status || 500).json({
-      error: error.response?.data || error.message
-    });
+    console.error("Error with AI API:", error.response?.data || error.message);
+    res.status(500).json({ error: "AI request failed", details: error.response?.data || error.message });
   }
 });
 
