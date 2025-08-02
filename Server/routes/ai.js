@@ -1,8 +1,12 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
+const { verifyToken } = require('../middleware/authmiddleware');
 
-router.post('/ai', async (req, res) => {
+
+// ✅ AI Route (Protected)
+// Remove verifyToken and authorizeRoles from AI route
+router.post('/api/ai', async (req, res) => {
   try {
     const { model, messages } = req.body;
 
@@ -12,10 +16,7 @@ router.post('/ai', async (req, res) => {
 
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
-      {
-        model,
-        messages
-      },
+      { model, messages },
       {
         headers: {
           "Content-Type": "application/json",
@@ -32,5 +33,6 @@ router.post('/ai', async (req, res) => {
     });
   }
 });
+
 
 module.exports = router;
