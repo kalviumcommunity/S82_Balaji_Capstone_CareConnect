@@ -2,7 +2,7 @@ import React from 'react'
   
   function GoogleSignInButton() {
     const handleGoogleSignIn = () => {
-        window.location.href = "http://localhost:3000/api/auth/google";
+        window.location.href = "https://s82-balaji-capstone-careconnect-4.onrender.com/api/auth/google";
       };
       console.log(window.location.href)
     return (

@@ -20,7 +20,7 @@ const SpecializationDoctors = () => {
       try {
         if (!specialization) return;
         const res = await axios.get(
-          `http://localhost:3000/api/doctors/specialty/${specialization.toLowerCase()}`
+          `https://s82-balaji-capstone-careconnect-4.onrender.com/api/doctors/specialty/${specialization.toLowerCase()}`
         );
         console.log('Doctors data:', res.data.doctors);
         setDoctors(res.data.doctors || []);

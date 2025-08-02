@@ -10,7 +10,7 @@ const DoctorAppointments = () => {
     const fetchAppointments = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/api/doctors/${doctorId}/appointments`,
+          `https://s82-balaji-capstone-careconnect-4.onrender.com/api/doctors/${doctorId}/appointments`,
           { withCredentials: true }
         );
         setAppointments(res.data);

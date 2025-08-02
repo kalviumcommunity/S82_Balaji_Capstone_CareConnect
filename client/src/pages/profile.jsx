@@ -20,7 +20,7 @@ function ProfilePage() {
 
   try {
     const res = await axios.post(
-      "http://localhost:3000/api/profile/upload-profile-photo",
+      "https://s82-balaji-capstone-careconnect-4.onrender.com/api/profile/upload-profile-photo",
       formData,
       {
         headers: {
@@ -57,7 +57,7 @@ function ProfilePage() {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:3000/api/patientprofile/profile",
+          "https://s82-balaji-capstone-careconnect-4.onrender.com/api/patientprofile/profile",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -100,7 +100,7 @@ function ProfilePage() {
 
   let certificateUrl = null;
   if (user && user.role === "doctor" && user.doctor?.certificateUrl) {
-    certificateUrl = `http://localhost:3000/${user.doctor.certificateUrl}`;
+    certificateUrl = `https://s82-balaji-capstone-careconnect-4.onrender.com/${user.doctor.certificateUrl}`;
   }
 
   return (
