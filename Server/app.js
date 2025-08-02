@@ -31,9 +31,10 @@ app.use(passport.session());
 // ──────────────────────────────────────────────
 app.use(cors({
   origin: [
-    'https://care-connect-2.netlify.app',
-    'http://localhost:5173',
-    'http://localhost:5174'
+    'https://capstone-careconnect1.netlify.app',
+    'https://magical-scone-a26a49.netlify.app',
+    'https://silver-mandazi-b73e3b.netlify.app/',
+    'http://localhost:5173'
   ],
   credentials: true
 }));
@@ -58,7 +59,7 @@ app.post('/api/ai', async (req, res) => {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`, // OpenRouter API key
-          "HTTP-Referer": "http://localhost:5173", // Required by OpenRouter
+          "HTTP-Referer": "https://capstone-careconnect.netlify.app", // Required by OpenRouter
           "X-Title": "CareConnect AI Chatbot"
         }
       }

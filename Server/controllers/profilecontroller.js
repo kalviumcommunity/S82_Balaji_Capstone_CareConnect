@@ -27,7 +27,7 @@ const uploadProfilePhoto = async (req, res) => {
 
     res.json({
       message: "Profile photo updated successfully",
-      imageUrl: `http://localhost:3000/${imagePath}`,
+      imageUrl: `https://s82-balaji-capstone-careconnect-4.onrender.com/${imagePath}`,
     });
   } catch (err) {
     console.error("Error in uploadProfilePhoto:", err);
@@ -46,7 +46,7 @@ const getProfile = async (req, res) => {
         name: user.name,
         email: user.email,
         role: "doctor",
-        image: user.image ? `http://localhost:3000/${user.image}` : null
+        image: user.image ? `https://s82-balaji-capstone-careconnect-4.onrender.com/${user.image}` : null
       });
     }
 
@@ -56,7 +56,7 @@ const getProfile = async (req, res) => {
         name: user.name,
         email: user.email,
         role: "patient",
-        image: user.image ? `http://localhost:3000/${user.image}` : null
+        image: user.image ? `https://s82-balaji-capstone-careconnect-4.onrender.com/${user.image}` : null
       });
     }
 
