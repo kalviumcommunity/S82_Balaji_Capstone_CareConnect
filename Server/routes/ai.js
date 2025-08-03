@@ -1,9 +1,4 @@
 // routes/ai.js
-const express = require('express');
-const axios = require('axios');
-const router = express.Router();
-require('dotenv').config();
-
 router.post('/ai', async (req, res) => {
   try {
     const { messages } = req.body;
@@ -12,14 +7,15 @@ router.post('/ai', async (req, res) => {
       return res.status(400).json({ error: "Messages are required" });
     }
 
+    console.log("API Key check:", process.env.OPENAI_API_KEY ? "Present" : "Missing");
+
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       console.error("❌ Missing OPENAI_API_KEY in environment");
       return res.status(500).json({ error: "Server configuration error: API key missing" });
     }
 
-    console.log("✅ API key loaded, starts with:", apiKey.slice(0, 7));
-    console.log("✅ Sending request to OpenRouter...");
+    console.log("✅ API key exists. Sending request to OpenRouter...");
 
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -43,5 +39,3 @@ router.post('/ai', async (req, res) => {
     });
   }
 });
-
-module.exports = router;
