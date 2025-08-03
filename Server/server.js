@@ -5,6 +5,14 @@ require('dotenv').config();
 const Doctor = require('./models/doctor');
 const Patient = require('./models/patient');
 const aiRoute = require('./routes/ai');
+
+
+const originalUse = app.use;
+app.use = function (path, ...handlers) {
+  console.log("[DEBUG] app.use called with:", path);
+  return originalUse.apply(this, [path, ...handlers]);
+};
+
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('Connected to database'))
   .catch((err) => console.log(err));

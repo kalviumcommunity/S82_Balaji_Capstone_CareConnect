@@ -12,10 +12,10 @@ const aiRoute = require('./routes/ai');
 const app = express();
 app.enable('trust proxy');
 
-// ✅ Body Parser
+// ✅ Middleware
 app.use(express.json());
 
-// ✅ CORS Setup (must be BEFORE routes)
+// ✅ CORS
 app.use(cors({
   origin: [
     'https://capstone-careconnect1.netlify.app',
@@ -26,8 +26,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// ✅ Explicitly handle preflight requests
-app.options('*', cors());
 
 // ✅ Session & Passport
 app.use(session({
@@ -38,23 +36,14 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ✅ AI Route (NO AUTH)
+// ✅ Routes
 app.use('/api/ai', aiRoute);
-
-// ✅ Other Routes
 app.use('/api/auth', googleAuthRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api', mainRouter);
 
-// ✅ Public uploads
+// ✅ Static & Health Check
 app.use('/uploads', express.static('uploads'));
+app.get('/', (req, res) => res.status(200).send('✅ Hello From Backend!'));
 
-// ✅ Health Check
-app.get('/', (req, res) => {
-  res.status(200).send('✅ Hello From Backend!');
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
-
-module.exports = app;
+module.exports = app;  // <--- IMPORTANT

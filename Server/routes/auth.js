@@ -4,6 +4,29 @@ const upload = require('../middleware/multer');
 const authController = require('../controllers/authcontrol');
 const authMiddleware = require('../middleware/authmiddleware');
 
+const originalGet = router.get;
+router.get = function (...args) {
+  console.log(`[DEBUG] router.get in ${__filename} called with:`, args[0]);
+  return originalGet.apply(this, args);
+};
+
+const originalPost = router.post;
+router.post = function (...args) {
+  console.log(`[DEBUG] router.post in ${__filename} called with:`, args[0]);
+  return originalPost.apply(this, args);
+};
+
+const originalPut = router.put;
+router.put = function (...args) {
+  console.log(`[DEBUG] router.put in ${__filename} called with:`, args[0]);
+  return originalPut.apply(this, args);
+};
+
+const originalDelete = router.delete;
+router.delete = function (...args) {
+  console.log(`[DEBUG] router.delete in ${__filename} called with:`, args[0]);
+  return originalDelete.apply(this, args);
+};
 
 // router.get('/profile', authMiddleware, authController.getProfile);
 // 📝 Doctor/Patient Signup & Login
