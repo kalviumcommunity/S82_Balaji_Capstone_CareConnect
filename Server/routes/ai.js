@@ -1,4 +1,10 @@
 // routes/ai.js
+const express = require('express');
+const axios = require('axios');
+const router = express.Router();
+require('dotenv').config();
+
+// routes/ai.js
 router.post('/ai', async (req, res) => {
   try {
     const { messages } = req.body;
@@ -39,3 +45,6 @@ router.post('/ai', async (req, res) => {
     });
   }
 });
+
+
+module.exports = router;
