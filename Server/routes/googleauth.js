@@ -1,20 +1,24 @@
 const express = require('express');
 const passport = require('passport');
+const { googleAuthCallback } = require('../controllers/authcontrol');
 const router = express.Router();
+console.log("✅ googleauth.js loaded");
 
-// 🔹 Google Auth Route
-router.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+
+// ✅ Step 1: Redirect to Google
+router.get('/google', (req, res, next) => {
+  console.log("✅ Google Login Route Hit");
+  next();
+}, passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+
+// ✅ Step 2: Callback from Google
+router.get('/google/callback',
+  passport.authenticate('google', { failureRedirect: '/', session: false }),
+  googleAuthCallback
 );
 
-// 🔹 Google Callback Route
-router.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    // On success, redirect to front-end
-    const token = req.user.token;
-    res.redirect(`https://capstone-careconnect1.netlify.app/google-success?token=${token}`);
-  }
-);
+
+
 
 module.exports = router;

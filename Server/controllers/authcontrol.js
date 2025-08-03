@@ -210,44 +210,25 @@ exports.loginUser = async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 exports.googleAuthCallback = async (req, res) => {
   try {
-    const { profile } = req.user;
-    const { displayName, emails } = profile;
-
+    const { displayName, emails } = req.user;
     if (!emails || emails.length === 0) {
-      return res.status(400).json({ message: 'Email is required for authentication' });
+      return res.status(400).json({ message: 'Email is required' });
     }
 
     const email = emails[0].value;
-    const fullName = displayName || "Google User";
+    let user = await Patient.findOne({ email });
 
-    let existingUser = await Patient.findOne({ email });
-
-    if (!existingUser) {
-      existingUser = new Patient({
-        fullName,
-        email,
-        password: "", // Skip password
-        isActivated: true,
-      });
-
-      // ✅ IMPORTANT LINE:
-      await existingUser.save({ validateBeforeSave: false });
+    if (!user) {
+      user = new Patient({ fullName: displayName || 'Google User', email, isActivated: true });
+      await user.save({ validateBeforeSave: false });
     }
 
-    const token = jwt.sign({ id: existingUser._id }, process.env.SECRET_KEY, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '7d' });
 
-    res.cookie('accesstoken', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      maxAge: 72 * 60 * 60 * 1000,
-    });
-
-    res.redirect(`https://capstone-careconnect1.netlify.app/google-success?token=${token}`);
-  } catch (err) {
-    console.error("🔥 Google Auth Error:", err);
-    res.status(500).json({ message: "Google Auth failed", error: err.message });
+    // ✅ Redirect to Frontend with Token
+    return res.redirect(`https://capstone-careconnect1.netlify.app/google-success?token=${token}`);
+  } catch (error) {
+    console.error("Google Auth Error:", error);
+    res.redirect('https://capstone-careconnect1.netlify.app/google-failed');
   }
 };
-
-
