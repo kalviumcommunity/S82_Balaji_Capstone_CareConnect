@@ -7,7 +7,7 @@ const mainRouter = require('./routes/index');
 const googleAuthRoutes = require('./routes/googleauth');
 const profileRoutes = require('./routes/profileroutes');
 const aiRoute = require('./routes/ai');
-const { verifyToken } = require('./middleware/authMiddleware'); // Assuming this is your auth
+const { verifyToken } = require('./middleware/authmiddleware'); // Assuming this is your auth
 
 const app = express();
 app.enable('trust proxy');
