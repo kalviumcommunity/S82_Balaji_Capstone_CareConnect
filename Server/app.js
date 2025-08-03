@@ -37,7 +37,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // ✅ Routes
-app.use('/api/ai', aiRoute);
+app.use('/api/ai', require('./routes/ai'));
 app.use('/api/auth', googleAuthRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api', mainRouter);
