@@ -24,18 +24,21 @@ router.post('/', async (req, res) => {
     console.log("✅ API key exists. Sending request to OpenRouter...");
 
     const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        model: "mistralai/mistral-7b-instruct",
-        messages
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-        }
-      }
-    );
+  "https://openrouter.ai/api/v1/chat/completions",
+  {
+    model: "mistralai/mistral-7b-instruct",
+    messages
+  },
+  {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+      "HTTP-Referer": "https://capstone-careconnect1.netlify.app", // required for OpenRouter
+      "X-Title": "CareConnect AI Chat" // your app name
+    }
+  }
+);
+
 
     res.json(response.data);
   } catch (error) {
