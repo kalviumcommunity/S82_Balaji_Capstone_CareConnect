@@ -20,6 +20,11 @@ app.use(cors({
 // ✅ Initialize Passport (no sessions)
 app.use(passport.initialize());
 
+app.post('/api/ai-test', (req, res) => {
+  console.log("AI Test route hit");
+  return res.json({ status: "OK" });
+});
+
 // ✅ Routes
 app.use('/api/auth', googleAuthRoutes);
 app.use('/api/profile', profileRoutes);
