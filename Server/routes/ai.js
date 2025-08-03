@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
     const headers = {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`,
-      "HTTP-Referer": referer, // Must match your frontend origin
+      "Referer": referer, // Must match your frontend origin
       "X-Title": "CareConnect AI Chat"
     };
 
