@@ -7,6 +7,7 @@ const mainRouter = require('./routes/index');
 const googleAuthRoutes = require('./routes/googleauth');
 const profileRoutes = require('./routes/profileroutes');
 const aiRoute = require('./routes/ai');
+const { verifyToken } = require('./middleware/authMiddleware'); // Assuming this is your auth
 
 const app = express();
 app.enable('trust proxy');
@@ -20,16 +21,13 @@ app.use(cors({
 // ✅ Initialize Passport (no sessions)
 app.use(passport.initialize());
 
-app.post('/api/ai-test', (req, res) => {
-  console.log("AI Test route hit");
-  return res.json({ status: "OK" });
-});
-
 // ✅ Routes
+app.use('/api/ai', aiRoute); // Public route (NO AUTH HERE)
 app.use('/api/auth', googleAuthRoutes);
-app.use('/api/profile', profileRoutes);
-app.use('/api/ai', aiRoute);
-app.use('/api', mainRouter);
+
+// Apply auth for protected routes only
+app.use('/api/profile', verifyToken, profileRoutes);
+app.use('/api', verifyToken, mainRouter);
 
 app.get('/', (req, res) => res.status(200).send('✅ Hello From Backend!'));
 
