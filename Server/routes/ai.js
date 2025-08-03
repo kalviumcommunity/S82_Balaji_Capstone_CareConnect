@@ -5,7 +5,7 @@ const router = express.Router();
 require('dotenv').config();
 
 // routes/ai.js
-router.post('/ai', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { messages } = req.body;
 
