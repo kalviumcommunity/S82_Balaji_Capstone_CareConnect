@@ -12,7 +12,6 @@ mongoose.connect(process.env.MONGO_URL)
 console.log("Password required:", Patient.schema.paths.password.options.required);
 console.log("FullName required:", Patient.schema.paths.fullName.options.required);
 
-app.use('/api/ai', aiRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
