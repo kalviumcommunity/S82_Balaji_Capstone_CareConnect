@@ -20,11 +20,14 @@ app.use(cors({
 }));
 
 // Sessions & Passport
+
 app.use(session({
   secret: process.env.SECRET_KEY,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: { secure: false } // secure: true if HTTPS
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 

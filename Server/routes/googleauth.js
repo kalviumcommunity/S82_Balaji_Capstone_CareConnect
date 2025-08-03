@@ -1,35 +1,20 @@
 const express = require('express');
 const passport = require('passport');
-const { googleAuthCallback } = require('../controllers/authcontrol');
 const router = express.Router();
 
-const originalRouterUse = router.use;
-router.use = function (...args) {
-  console.log(`[DEBUG] router.use in ${__filename} called with:`, args[0]);
-  return originalRouterUse.apply(this, args);
-};
+// 🔹 Google Auth Route
+router.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
-const originalRouterGet = router.get;
-router.get = function (...args) {
-  console.log(`[DEBUG] router.get in ${__filename} called with:`, args[0]);
-  return originalRouterGet.apply(this, args);
-};
-
-// Added debug logging from AI-chatbot branch
-router.get('/google', (req, res, next) => {
-  console.log("✅ Google Login Route Hit");
-  next();
-}, passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-router.get('/google/callback',
-  (req, res, next) => {
-    console.log("✅ Callback HIT");
-    console.log("Cookies:", req.cookies);
-    console.log("Session:", req.session);
-    next();
-  },
-  passport.authenticate('google', { failureRedirect: '/' }),
-  googleAuthCallback
+// 🔹 Google Callback Route
+router.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    // On success, redirect to front-end
+    const token = req.user.token;
+    res.redirect(`https://capstone-careconnect1.netlify.app/google-success?token=${token}`);
+  }
 );
 
 module.exports = router;
