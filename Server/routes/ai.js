@@ -9,22 +9,32 @@ const { verifyToken } = require('../middleware/authmiddleware');
 router.post('/ai', async (req, res) => {
   try {
     const { model, messages } = req.body;
-
     if (!model || !messages) {
       return res.status(400).json({ error: "Model and messages are required" });
     }
 
-    const response = await axios.post(
-  "https://openrouter.ai/api/v1/chat/completions",
-  { model, messages },
-  {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`
-    }
-  }
-);
+    // We will assume the key is stored in OPENAI_API_KEY, even if it's OpenRouter
+    const apiKey = process.env.OPENAI_API_KEY;
 
+    if (!apiKey) {
+      return res.status(500).json({ error: "OPENAI_API_KEY is missing in environment variables" });
+    }
+
+    // Hardcode OpenRouter endpoint but use OPENAI_API_KEY
+    const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
+
+    console.log("Using OpenRouter with OPENAI_API_KEY. Key starts with:", apiKey.slice(0, 7));
+
+    const response = await axios.post(
+      apiUrl,
+      { model, messages },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`
+        }
+      }
+    );
 
     res.json(response.data);
   } catch (error) {
