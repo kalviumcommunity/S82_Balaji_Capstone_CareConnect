@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const passport = require('passport');
+const passport = require('./config/passport'); // ✅ Load strategy config
 require('dotenv').config();
 
 const mainRouter = require('./routes/index');
@@ -12,22 +12,14 @@ const aiRoute = require('./routes/ai');
 const app = express();
 app.enable('trust proxy');
 
-// ✅ Middleware
+// Middleware
 app.use(express.json());
-
-// ✅ CORS
 app.use(cors({
-  origin: [
-    'https://capstone-careconnect1.netlify.app',
-    'http://localhost:5173'
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: ['https://capstone-careconnect1.netlify.app', 'http://localhost:5173'],
+  credentials: true
 }));
 
-
-// ✅ Session & Passport
+// Sessions & Passport
 app.use(session({
   secret: process.env.SECRET_KEY,
   resave: false,
@@ -36,14 +28,12 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ✅ Routes
-app.use('/api/ai', require('./routes/ai'));
+// Routes
 app.use('/api/auth', googleAuthRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/ai', aiRoute);
 app.use('/api', mainRouter);
 
-// ✅ Static & Health Check
-app.use('/uploads', express.static('uploads'));
 app.get('/', (req, res) => res.status(200).send('✅ Hello From Backend!'));
 
-module.exports = app;  // <--- IMPORTANT
+module.exports = app;
