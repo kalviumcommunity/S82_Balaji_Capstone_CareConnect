@@ -33,7 +33,7 @@ const AiChatbot = () => {
         content: msg.text
       }));
 
-      const response = await axios.post(`${API_BASE_URL}/api/ai`, {
+      const response = await axios.post(`${API_BASE_URL}/ai`, {
         messages: openAiMessages
       },{
         withCredentials: false 
