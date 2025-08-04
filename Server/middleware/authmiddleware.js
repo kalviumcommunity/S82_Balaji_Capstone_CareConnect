@@ -3,8 +3,12 @@ require('dotenv').config();
 
 const SECRET = process.env.SECRET_KEY;
 
-// Verify token and attach user to request
 function verifyToken(req, res, next) {
+  // Allow OPTIONS requests to pass through for CORS preflight
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+
   const authHeader = req.headers['authorization'];
   
   if (!authHeader) {
@@ -19,15 +23,17 @@ function verifyToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, SECRET);
-    req.user = decoded; // { id, role }
+    req.user = decoded; // e.g., { id, role }
     next();
   } catch (err) {
     console.error("JWT Error:", err.message);
-    return res.status(403).json({ message: 'Invalid or expired token' });
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired' });
+    }
+    return res.status(403).json({ message: 'Invalid token' });
   }
 }
 
-// Role-based access
 function authorizeRoles(...roles) {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {

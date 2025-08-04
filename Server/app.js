@@ -7,6 +7,7 @@ const mainRouter = require('./routes/index');
 const googleAuthRoutes = require('./routes/googleauth');
 const profileRoutes = require('./routes/profileroutes');
 const aiRoute = require('./routes/ai');
+const authroutes = require('./routes/auth');
 const { verifyToken } = require('./middleware/authmiddleware'); // Assuming this is your auth
 
 const app = express();
@@ -24,7 +25,7 @@ app.use(passport.initialize());
 // ✅ Routes
 app.use('/api/ai', aiRoute); // Public route (NO AUTH HERE)
 app.use('/api/auth', googleAuthRoutes);
-
+app.use('/api/auth', authroutes);
 // Apply auth for protected routes only
 app.use('/api/profile', verifyToken, profileRoutes);
 app.use('/api', verifyToken, mainRouter);
