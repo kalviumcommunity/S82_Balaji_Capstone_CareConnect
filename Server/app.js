@@ -14,7 +14,7 @@ app.enable('trust proxy');
 
 app.use(express.json());
 app.use(cors({
-  origin: ['https://capstone-careconnect2.netlify.app', 'http://localhost:5173'],
+  origin: ['https://capstone-careconnect4.netlify.app', 'http://localhost:5173'],
   credentials: true
 }));
 
