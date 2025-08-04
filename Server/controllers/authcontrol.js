@@ -226,9 +226,9 @@ exports.googleAuthCallback = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: '7d' });
 
     // ✅ Redirect to Frontend with Token
-    return res.redirect(`https://capstone-careconnect1.netlify.app/google-success?token=${token}`);
+    return res.redirect(`https://capstone-careconnect2.netlify.app/google-success?token=${token}`);
   } catch (error) {
     console.error("Google Auth Error:", error);
-    res.redirect('https://capstone-careconnect1.netlify.app/google-failed');
+    res.redirect('https://capstone-careconnect2.netlify.app/google-failed');
   }
 };
