@@ -159,8 +159,8 @@ follows a structured development plan to ensure smooth implementation and a high
 include adding reviews, real-time availability tracking, and appointment booking features.
 <<<<<<< HEAD
 
-#### Backend-deployment - https://s82-balaji-capstone-careconnect-3.onrender.com
+#### Backend-deployment - [https://s82-balaji-capstone-careconnect-3.onrender.com](https://s82-balaji-capstone-careconnect-4.onrender.com)
 
-#### Frontend Deployment - https://extraordinary-kitsune4-f05960.netlify.app/
+#### Frontend Deployment - [https://capstone-careconnect4.netlify.app](https://capstone-careconnect4.netlify.app)
 =======
 >>>>>>> AI-chatbot
