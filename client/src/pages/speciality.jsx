@@ -10,7 +10,7 @@ const specialties = [
   { title: 'Pediatrics', icon: '👶', link: '/doctors/pediatrics' },
   { title: 'Gynecologist', icon: '👩‍⚕️', link: '/doctors/gynecologist' },
   { title: 'Cardiologist', icon: '❤️', link: '/doctors/cardiologist' },
-  { title: 'Neurologist', icon: '🧠', link: '/doctors/neurologist' },
+  { title: 'Neurologist', icon: '🧠', link: '/doctors/neurology' },
   { title: 'Orthopedic', icon: '🦴', link: '/doctors/orthopedic' },
   { title: 'ENT Specialist', icon: '👂', link: '/doctors/ent' },
   { title: 'Psychatrist', icon: '👨‍🔬', link: '/doctors/psychatrist' },

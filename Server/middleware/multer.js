@@ -7,12 +7,14 @@ const storage = multer.diskStorage({
     cb(null, "uploads/"); // your existing folder
   },
   filename: (req, file, cb) => {
+    // Sanitize filename: alphanumeric, dots, and hyphens only
+    const sanitized = file.originalname.replace(/[^a-z0-9.]/gi, '-').toLowerCase();
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // e.g., 12345.pdf
+    cb(null, uniqueSuffix + "-" + sanitized);
   }
 });
 
-// File filter (optional - allow only specific file types)
+// File filter
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
   if (allowedTypes.includes(file.mimetype)) {
@@ -22,6 +24,10 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const upload = multer({ storage, fileFilter });
+const upload = multer({ 
+  storage, 
+  fileFilter,
+  limits: { fileSize: 2 * 1024 * 1024 } // 2MB limit
+});
 
 module.exports = upload;

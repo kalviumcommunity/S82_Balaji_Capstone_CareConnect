@@ -7,9 +7,14 @@ import Logo from "../../assets/FullLogo.jpg"; // Your logo path
 import {jwtDecode} from "jwt-decode";
 
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://s82-balaji-capstone-careconnect-4.onrender.com';
+
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "", role: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
  
@@ -25,39 +30,78 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "https://s82-balaji-capstone-careconnect-4.onrender.com/api/auth/login",
+        `${API_BASE}/api/auth/login`,
         form, { withCredentials: true }
       );
 
+      if (res.data?.mfaRequired) {
+        setShowOtp(true);
+        alert(res.data.message || "OTP sent for MFA verification.");
+        return;
+      }
+
       if (res.data?.user) {
-  const rawUser = res.data.user;
-  const token = res.data.token;
-      const decoded = jwtDecode(token);
-  const user = {
-  ...rawUser,
-  role: decoded.role || "patient",
-};
+        const rawUser = res.data.user;
+        const token = res.data.token;
+        const decoded = jwtDecode(token);
+        const user = {
+          ...rawUser,
+          role: decoded.role || "patient",
+        };
 
-
-  localStorage.setItem("token", res.data.token);
-  localStorage.setItem("user", JSON.stringify(user));
-  login(); // from context?
-  alert(`Welcome ${user.fullName}`);
-console.log("Logged in user:", user.role);
-console.log("Login API response:", res.data);
-
-
-  if (user.role === "doctor") {
-  navigate("/doctor/dashboard");
-} else {
-  navigate("/");
-}
-} else {
-  alert("Login failed.");
-}
-
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(user));
+        login(); 
+        alert(`Welcome ${user.fullName}`);
+        
+        if (user.role === "admin") {
+          navigate("/cc-admin-panel");
+        } else if (user.role === "doctor") {
+          navigate("/doctor/dashboard");
+        } else {
+          navigate("/");
+        }
+      } else {
+        alert("Login failed.");
+      }
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      alert(err.response?.data?.error || err.response?.data?.message || "Login failed");
+    }
+  };
+
+  const handleMfaVerify = async (e) => {
+    e.preventDefault();
+    setIsVerifying(true);
+    try {
+      const res = await axios.post(`${API_BASE}/api/auth/verify-mfa`, {
+        email: form.email,
+        otp: otp,
+      });
+
+      const rawUser = res.data.user;
+      const token = res.data.token;
+      const decoded = jwtDecode(token);
+      const user = {
+        ...rawUser,
+        role: decoded.role || "patient",
+      };
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(user));
+      login();
+      alert(`Welcome ${user.fullName}`);
+      
+      if (user.role === "admin") {
+        navigate("/cc-admin-panel");
+      } else if (user.role === "doctor") {
+        navigate("/doctor/dashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      alert(err.response?.data?.error || "MFA verification failed. Please check your OTP.");
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -91,101 +135,134 @@ console.log("Login API response:", res.data);
         <div className="w-full md:w-1/2 p-6 md:p-10">
           <h1 className="text-3xl font-semibold text-center mb-6">Login</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="text-sm mb-1 block">
-                Email ID:
-              </label>
-              <div className="relative">
+          {showOtp ? (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-center text-blue-700">Multi-Factor Authentication</h3>
+              <p className="text-xs text-center text-gray-600">Enter the 6-digit code sent to {form.email}</p>
+              <form onSubmit={handleMfaVerify} className="space-y-4">
                 <input
-                  id="email"
-                  type="email"
-                  name="email"
-                  value={form.email}
+                  type="text"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full px-4 py-2 rounded-full border text-center text-xl tracking-widest"
+                  maxLength="6"
+                  required
+                />
+                <button 
+                  type="submit" 
+                  disabled={isVerifying}
+                  className="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  {isVerifying ? "Verifying..." : "Verify & Login"}
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setShowOtp(false)}
+                  className="w-full text-blue-600 text-xs hover:underline"
+                >
+                  Back to credentials
+                </button>
+              </form>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Email */}
+              <div>
+                <label htmlFor="email" className="text-sm mb-1 block">
+                  Email ID:
+                </label>
+                <div className="relative">
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter Email"
+                    className="w-full px-4 py-2 text-sm rounded-full border pl-9 focus:ring-2 focus:ring-blue-400"
+                  />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label htmlFor="password" className="text-sm mb-1 block">
+                  Password:
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder="Enter Password"
+                    className="w-full px-4 py-2 text-sm rounded-full border pl-9 focus:ring-2 focus:ring-blue-400"
+                  />
+                  <Lock
+                    onClick={togglePassword}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4 cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Role */}
+              <div>
+                <label htmlFor="role" className="text-sm mb-1 block">
+                  Select Role:
+                </label>
+                <select
+                  id="role"
+                  name="role"
+                  value={form.role}
                   onChange={handleChange}
                   required
-                  placeholder="Enter Email"
-                  className="w-full px-4 py-2 text-sm rounded-full border pl-9 focus:ring-2 focus:ring-blue-400"
-                />
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  className="w-full px-4 py-2 text-sm rounded-full border focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="">Select Role</option>
+                  <option value="doctor">Doctor</option>
+                  <option value="patient">Patient</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
-            </div>
 
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="text-sm mb-1 block">
-                Password:
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  placeholder="Enter Password"
-                  className="w-full px-4 py-2 text-sm rounded-full border pl-9 focus:ring-2 focus:ring-blue-400"
-                />
-                <Lock
-                  onClick={togglePassword}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4 cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Role */}
-            <div>
-              <label htmlFor="role" className="text-sm mb-1 block">
-                Select Role:
-              </label>
-              <select
-                id="role"
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 text-sm rounded-full border focus:ring-2 focus:ring-blue-400"
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 text-sm rounded-full hover:bg-blue-700 transition-colors"
               >
-                <option value="">Select Role</option>
-                <option value="doctor">Doctor</option>
-                <option value="patient">Patient</option>
-              </select>
-            </div>
+                Login
+              </button>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 text-sm rounded-full hover:bg-blue-700 transition-colors"
-            >
-              Login
-            </button>
+              {/* Google Sign-In */}
+              <button
+                type="button"
+                onClick={() =>
+                  (window.location.href =
+                    "https://s82-balaji-capstone-careconnect-4.onrender.com/api/auth/google")
+                }
+                className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-2 text-sm rounded-full hover:bg-red-600 transition-colors"
+              >
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                  alt="Google Logo"
+                  className="w-5 h-5"
+                />
+                Continue with Google
+              </button>
 
-            {/* Google Sign-In */}
-            <button
-              type="button"
-              onClick={() =>
-                (window.location.href =
-                  "https://s82-balaji-capstone-careconnect-4.onrender.com/api/auth/google")
-              }
-              className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-2 text-sm rounded-full hover:bg-red-600 transition-colors"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
-                alt="Google Logo"
-                className="w-5 h-5"
-              />
-              Continue with Google
-            </button>
-
-            {/* Signup Link */}
-            <p className="text-center text-xs pt-2">
-              Don&apos;t have an account?{" "}
-              <Link to="/signup" className="text-blue-600 hover:underline">
-                Signup
-              </Link>
-            </p>
-          </form>
+              {/* Signup Link */}
+              <p className="text-center text-xs pt-2">
+                Don&apos;t have an account?{" "}
+                <Link to="/signup" className="text-blue-600 hover:underline">
+                  Signup
+                </Link>
+              </p>
+            </form>
+          )}
         </div>
       </div>
     </div>

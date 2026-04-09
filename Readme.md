@@ -1,152 +1,117 @@
-# Doctor Recommendation Website
+# 🏥 CareConnect — Doctor Recommendation & Appointment Booking Platform
 
 ## Overview
 
-The Doctor Recommendation Website is a platform that allows users to find and explore doctors based on their specialty, location, and other relevant factors. The website provides detailed doctor profiles with qualifications, experience, and reviews, helping users make informed decisions.
+CareConnect is a full-stack healthcare web application that connects patients with verified specialist doctors. It features specialty browsing, AI-powered health chat, real-time appointment booking with video meeting links, role-based dashboards, and an admin verification system.
+
+## Live Deployment
+
+- 🌐 **Frontend:** https://capstone-careconnect4.netlify.app
+- ⚙️ **Backend:** https://s82-balaji-capstone-careconnect-3.onrender.com
 
 ## Features
 
-- Doctor Listings: Browse doctors categorized by specialty.
-
-- Search & Filter: Search for doctors based on name, specialty, and location.
-
-- Doctor Profiles: View detailed information, including qualifications and experience.
-
-- User Reviews & Ratings: Read and submit feedback on doctors.
-
-- Responsive Design: Accessible on both desktop and mobile devices.
-
+- **Doctor & Patient Roles** — Separate dashboards and flows for each role
+- **Browse by Specialty** — Find doctors (Cardiology, Neurology, Dermatology, etc.)
+- **Smart Search** — Filter doctors by specialty with real-time results
+- **Appointment Booking** — Pick date/time slot; instant double-booking prevention
+- **Video Meetings** — Auto-generated Jitsi meeting link on every booking
+- **Email Confirmation** — Booking confirmation email sent to patients
+- **JWT Authentication** — Secure login with 7-day tokens
+- **Google OAuth** — One-click Google sign-in for patients
+- **OTP Verification** — Email OTP for patient registration
+- **AI Chatbot (Nora)** — Powered by Mistral-7B via OpenRouter
+- **Admin Panel** — Secret URL admin panel to verify/reject doctor certificates
+- **Doctor Dashboard** — Real-time pending appointments with Join Meeting links
+- **Patient Profile** — Recent bookings with meeting links and status badges
+- **Rate Limiting** — AI endpoint (20 req/15min) and Auth (30 req/10min)
+- **Responsive Design** — Mobile navbar with hamburger menu
+- **404 Page** — Proper not-found handling
 
 ## Tech Stack
 
-- Frontend: React.js
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18 + Vite + TailwindCSS v4 |
+| Backend | Node.js + Express v5 |
+| Database | MongoDB (Mongoose) |
+| Auth | JWT + Bcrypt + Google OAuth (Passport.js) |
+| AI | OpenRouter API (Mistral-7B-Instruct) |
+| Meetings | Jitsi Meet (meet.jit.si) |
+| Animations | Framer Motion + AOS |
+| Email | Nodemailer |
+| Rate Limiting | express-rate-limit |
+| Deployment | Netlify + Render |
 
-- Backend: Node.js with Express 
+## User Roles
 
-- Database: MongoDB 
+| Role | Access |
+|------|--------|
+| **Patient** | Book appointments, view bookings + meeting links, AI chatbot |
+| **Doctor** | See pending appointments + meeting links, view patient info |
+| **Admin** | Verify/reject doctors via secret admin panel |
 
-- Authentication: JWT-based authentication
+## Installation
 
-- Hosting: Vercel / Netlify / render
-
-## Installation & Setup 
-
-### Clone the repository:
-
+```bash
+# Clone
 git clone https://github.com/kalviumcommunity/S82_Balaji_Capstone_CareConnect
 
-### Install dependencies:
+# Backend
+cd Server
+npm install
+npm start  # nodemon server.js
 
-npm install  # For Node.js backend
+# Frontend
+cd client
+npm install
+npm run dev
+```
 
-### Run the development server:
+## Environment Variables
 
-npm start  # Start the frontend
+### Server (`Server/.env`)
+```
+SECRET_KEY=your_jwt_secret
+MONGO_URI=your_mongodb_connection_string
+FRONTEND_URL=https://capstone-careconnect4.netlify.app
+ADMIN_EMAIL=admin@careconnect.com
+ADMIN_PASSWORD=your_admin_password
+ADMIN_NAME=your_gmail_address
+OPENAI_API_KEY=your_openrouter_api_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
 
-### Run the backend server:
+### Client (`client/.env`)
+```
+VITE_API_URL=https://s82-balaji-capstone-careconnect-3.onrender.com
+```
 
-node server.js  # Start the backend
+## API Endpoints
 
-## Day-by-Day Plan
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| POST | `/api/auth/login` | No | Login (doctor/patient/admin) |
+| POST | `/api/auth/signup` | No | Register doctor or patient |
+| GET | `/api/doctors/top` | No | Get top verified doctors |
+| GET | `/api/doctors/specialty/:spec` | No | Doctors by specialty |
+| POST | `/api/appointments` | No | Book appointment (generates meet link) |
+| GET | `/api/appointments/patient/:id` | No | Patient's bookings |
+| GET | `/api/appointments/doctor` | JWT (doctor) | Doctor's appointments |
+| PATCH | `/api/appointments/cancel/:id` | No | Cancel appointment |
+| GET | `/api/cc-admin-9x7z/doctors` | JWT (admin) | List all doctors |
+| PATCH | `/api/cc-admin-9x7z/verify/:id` | JWT (admin) | Verify a doctor |
+| PATCH | `/api/cc-admin-9x7z/reject/:id` | JWT (admin) | Reject a doctor |
+| GET | `/api/profile` | JWT | Get user profile |
+| POST | `/api/ai` | No (rate limited) | AI chatbot |
 
-### Week 1: Project Initialization & Planning
-**Day 1:** 
-- Define project scope and objectives
-- Create low-fidelity wireframes
-- Submit project idea and plan
+## Admin Access
 
-**Day 2:**
-- Develop high-fidelity wireframes
-- Set up a GitHub repository
-- Create an initial README file
-
-**Day 3-4:**
-- Configure GitHub project board for task tracking
-- Add at least 10 entries for daily work tracking
-
-**Day 5:**
-- Set up the backend server with Node.js & Express.js
-- Initialize a MongoDB database
-
-**Day 6:**
-- Design and implement the database schema
-- Establish relationships between entities in MongoDB
-
-**Day 7:**
-- Perform database read and write operations
-
----
-
-### Week 2: Backend Development & API Implementation
-**Day 8:**
-- Develop and test GET API endpoints
-
-**Day 9:**
-- Develop and test POST API endpoints
-
-**Day 10:**
-- Develop and test PUT API endpoints
-
-**Day 11:**
-- Deploy the backend server
-
-**Day 12:**
-- Implement authentication (Username/Password)
-
-**Day 13:**
-- Implement third-party authentication (Google OAuth)
-
-**Day 14:**
-- Update API templates in the repository using Bruno
-
----
-
-### Week 3: Frontend Development
-**Day 15:**
-- Initialize the React frontend application
-- Set up the project structure
-
-**Day 16:**
-- Develop core React components
-
-**Day 17:**
-- Match frontend components with high-fidelity designs
-
-**Day 18:**
-- Implement file upload functionality
-
-**Day 19:**
-- Implement entity update and delete functionality
-
-**Day 20:**
-- Integrate frontend with backend APIs
-
-**Day 21:**
-- Deploy the frontend server
-
----
-
-### Week 4: Testing, Debugging & Finalization
-**Day 22:**
-- Perform end-to-end testing
-
-**Day 23:**
-- Debug and resolve issues
-
-**Day 24:**
-- Final review and improvements
-
-**Day 25:**
-- Ensure matching between design and final implementation
-
-**Day 26:**
-- Add JWT-based authentication for secure API access
-
-**Day 27:**
-- Document project details and usage
-
-**Day 28:**
-- Final submission and presentation
+The admin panel is at a secret path to prevent unauthorized discovery:
+- **Frontend:** `/cc-admin-panel`
+- **Backend:** `/api/cc-admin-9x7z/...`
+- Admin logs in at `/login` using `role: admin` with credentials from `.env`
 
 ## Contributing
 
@@ -157,10 +122,4 @@ node server.js  # Start the backend
 The Doctor Recommendation Website is a useful tool for users to find healthcare professionals efficiently.The project 
 follows a structured development plan to ensure smooth implementation and a high-quality user experience. Future improvements could 
 include adding reviews, real-time availability tracking, and appointment booking features.
-<<<<<<< HEAD
 
-#### Backend-deployment - [https://s82-balaji-capstone-careconnect-3.onrender.com](https://s82-balaji-capstone-careconnect-4.onrender.com)
-
-#### Frontend Deployment - [https://capstone-careconnect4.netlify.app](https://capstone-careconnect4.netlify.app)
-=======
->>>>>>> AI-chatbot

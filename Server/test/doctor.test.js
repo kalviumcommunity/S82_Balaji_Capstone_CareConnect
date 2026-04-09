@@ -69,7 +69,7 @@ test('PUT /api/doctors/edit/:id - should update experience',async()=>{
         fullName: 'Dr. Raj',
         email: 'raj@example.com',
         password: 'rajpass',
-        specialization: 'Neurologist',
+        specialization: 'Neurology',
         experience: 3,
         location: 'Trichy',
         certificateUrl: 'http://certs.com/cert4.png',

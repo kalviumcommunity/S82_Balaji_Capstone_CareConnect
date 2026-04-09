@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { uploadProfilePhoto,getProfile } = require("../controllers/profilecontroller");
+const { uploadProfilePhoto, getProfile, toggleMfa } = require("../controllers/profilecontroller");
 const uploadProfileImageMiddleware = require("../middleware/profileupload");
 const { verifyToken } = require("../middleware/authmiddleware");
 
@@ -24,6 +24,8 @@ router.post(
   uploadProfileImageMiddleware.single("image"),
   uploadProfilePhoto
 );
+
+router.post("/toggle-mfa", verifyToken, toggleMfa);
 
 
 module.exports = router;

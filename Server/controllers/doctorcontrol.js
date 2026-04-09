@@ -1,10 +1,30 @@
 const Doctor = require('../models/doctor');
 const Appointment = require('../models/appointment');
 
-// Get all doctors
+// Get all doctors (with optional pagination)
 exports.getAllDoctors = async (req, res) => {
   try {
-    const doctors = await Doctor.find();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [doctors, total] = await Promise.all([
+      Doctor.find().skip(skip).limit(limit),
+      Doctor.countDocuments()
+    ]);
+    res.status(200).json({ doctors, total, page, totalPages: Math.ceil(total / limit) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get top verified doctors for homepage
+exports.getTopDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({ isVerified: true })
+      .sort({ rating: -1, experience: -1 })
+      .limit(6)
+      .select('fullName specialization experience photo rating reviewCount bio location');
     res.status(200).json(doctors);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -16,7 +36,7 @@ exports.createDoctor = async (req, res) => {
   try {
     const doctorData = req.body;
     if (req.file) {
-      doctorData.certificate = req.file.path; // multer gives file path
+      doctorData.certificate = req.file.path;
     }
     const newDoctor = new Doctor(doctorData);
     await newDoctor.save();
@@ -39,38 +59,44 @@ exports.editDoctor = async (req, res) => {
       { new: true }
     );
     if (!updatedDoctor) {
-      return res.status(400).json({ Error: 'Doctor Not Found' });
+      return res.status(404).json({ error: 'Doctor not found' });
     }
     res.status(200).json({ updatedDoctor });
   } catch (err) {
-    res.status(400).send({ message: err });
+    res.status(400).json({ message: err.message });
   }
 };
 
-// Get doctors by specialization
+// Get doctors by specialization (with pagination)
 exports.getDoctorsBySpecialization = async (req, res) => {
   try {
-    const specialization = req.params.specialization.toLowerCase(); // normalize
-    const doctors = await Doctor.find({ specialization });
-    if (doctors.length === 0) {
+    const specialization = req.params.specialization.toLowerCase();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const skip = (page - 1) * limit;
+
+    const [doctors, total] = await Promise.all([
+      Doctor.find({ specialization }).skip(skip).limit(limit),
+      Doctor.countDocuments({ specialization })
+    ]);
+
+    if (doctors.length === 0 && page === 1) {
       return res.status(404).json({ message: 'No doctors found for this specialization' });
     }
-    res.status(200).json(doctors);
+    res.status(200).json({ doctors, total, page, totalPages: Math.ceil(total / limit) });
   } catch (err) {
     res.status(500).json({ error: 'Server error', details: err.message });
   }
 };
 
-// Delete doctor
+// Delete doctor (self only, unless admin)
 exports.deleteDoctor = async (req, res) => {
   const doctorId = req.params.id;
+  const isOwner = req.user.role === 'doctor' && req.user.id === doctorId;
+  const isAdmin = req.user.role === 'admin';
 
-  if (req.user.role !== 'doctor') {
-    return res.status(403).json({ message: 'Only doctors can delete their profile' });
-  }
-
-  if (req.user.id !== doctorId) {
-    return res.status(403).json({ message: 'You can only delete your own profile' });
+  if (!isOwner && !isAdmin) {
+    return res.status(403).json({ message: 'Forbidden: You cannot delete this profile' });
   }
 
   try {
@@ -81,14 +107,14 @@ exports.deleteDoctor = async (req, res) => {
   }
 };
 
-// Get appointments for a specific doctor
+// Get appointments for a specific doctor (public endpoint used by DoctorAppointments.jsx)
 exports.getAppointmentsForDoctor = async (req, res) => {
   try {
     const doctorId = req.params.doctorId;
     const appointments = await Appointment.find({ doctor: doctorId })
-      .populate("patient", "fullName email");
+      .populate('patient', 'fullName email phone');
     res.json(appointments);
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch appointments" });
+    res.status(500).json({ message: 'Failed to fetch appointments' });
   }
 };

@@ -26,6 +26,7 @@ const AiChatbot = () => {
     setMessages(newMessages);
     setInput("");
     setLoading(true);
+    console.log(userMessage);
 
     try {
       const openAiMessages = newMessages.map(msg => ({
@@ -33,10 +34,14 @@ const AiChatbot = () => {
         content: msg.text
       }));
 
+      const token = localStorage.getItem('token');
       const response = await axios.post(`${API_BASE_URL}/ai`, {
         messages: openAiMessages
       },{
-        withCredentials: false 
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        withCredentials: true 
       });
 
       const aiMessage = response.data.choices?.[0]?.message?.content || "No response from AI.";
