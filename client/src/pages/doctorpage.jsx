@@ -14,7 +14,7 @@ function DoctorsPage() {
   const fetchDoctors = async () => {
     try {
       const res = await axios.get(`https://s82-balaji-capstone-careconnect-4.onrender.com/api/doctors/specialty/${specialty}`);
-      setDoctors(res.data || []);
+      setDoctors(res.data.doctors || []);
     } catch (err) {
       console.error('Failed to fetch doctors', err);
     }
