@@ -12,7 +12,7 @@ const appointmentSchema = new mongoose.Schema({
     required: true
   },
   date: {
-    type: String, // or Date
+    type: Date,
     required: true
   },
   time: {
@@ -23,6 +23,10 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
     enum: ["booked", "completed", "cancelled"],
     default: "booked"
+  },
+  meetingLink: {
+    type: String,
+    default: null
   }
 }, { timestamps: true });
 

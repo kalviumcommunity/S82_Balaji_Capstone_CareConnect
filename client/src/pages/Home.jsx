@@ -1,16 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Search, Award, Shield, Mail, Phone } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CgProfile,CgArrowRight,CgArrowLeft } from "react-icons/cg";
+import { CgArrowRight, CgArrowLeft } from "react-icons/cg";
 import { useAuth } from './authentication/authcontext';
 import '../app.css';
 import '../index.css';
 import Doctor from './../assets/doctor.png';
-import Logo from './../assets/FullLogo.jpg';
-import { motion, AnimatePresence } from 'framer-motion';
 import AOS from "aos";
 import "aos/dist/aos.css";
 import aiIcon from '../assets/chatbot.png';
+import axios from 'axios';
+import Navbar from '../components/Navbar';
+import DoctorCard from '../components/DoctorCard';
+import SkeletonLoader from '../components/SkeletonLoader';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'https://s82-balaji-capstone-careconnect-4.onrender.com';
 
 function Home() {
   const { isLoggedIn, logout } = useAuth();
@@ -20,20 +24,25 @@ function Home() {
   const [scrollToContact, setScrollToContact] = useState(false);
   const [visibleIndex, setVisibleIndex] = useState(0);
   const navigate = useNavigate();
+  const [topDoctors, setTopDoctors] = useState([]);
+  const [doctorsLoading, setDoctorsLoading] = useState(true);
 
 
 
   useEffect(() => {
-    AOS.init({
-    duration: 1000, // Animation duration in ms
-    once: true,     // Whether animation should happen only once
-    easing: 'ease-in-out',
-  });
+    AOS.init({ duration: 1000, once: true, easing: 'ease-in-out' });
     if (scrollToContact && contactRef.current) {
       contactRef.current.scrollIntoView({ behavior: 'smooth' });
       setScrollToContact(false);
     }
   }, [scrollToContact]);
+
+  useEffect(() => {
+    axios.get(`${API_BASE}/api/doctors/top`)
+      .then(res => setTopDoctors(res.data))
+      .catch(() => setTopDoctors([]))
+      .finally(() => setDoctorsLoading(false));
+  }, []);
 
   const specialties = [
     { title: 'Pulmonologist', icon: '🫁', link: '/doctors/pulmonologist' },
@@ -41,7 +50,7 @@ function Home() {
     { title: 'Pediatrics', icon: '👶', link: '/doctors/pediatrics' },
     { title: 'Gynecologist', icon: '👩', link: '/doctors/gynecologist' },
     { title: 'Cardiologist', icon: '❤️', link: '/doctors/cardiologist' },
-    { title: 'Neurologist', icon: '🧠', link: '/doctors/neurologist' },
+    { title: 'Neurologist', icon: '🧠', link: '/doctors/neurology' },
     { title: 'Orthopedic', icon: '🦴', link: '/doctors/orthopedic' },
     { title: 'ENT Specialist', icon: '👂', link: '/doctors/ent' }
   ];
@@ -51,88 +60,17 @@ function Home() {
   );
 
   const handleSpecialisationChange = (e) => {
-    const value = e.target.value;
-    if (value) {
-      navigate(`/speciality?type=${value}`);
-    }
+    if (e.target.value) navigate(`/speciality?type=${e.target.value}`);
   };
-    const itemsPerPage = 4;
-const maxIndex = Math.max(0, Math.ceil(filteredSpecialties.length / itemsPerPage) - 1);
+  const itemsPerPage = 4;
+  const maxIndex = Math.max(0, Math.ceil(filteredSpecialties.length / itemsPerPage) - 1);
 
 
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-gradient-to-b from-sky-100 to-white">
-      
-      {/* Navbar */}
-      {/* Navbar */}
-      <nav className="w-full h-20 flex justify-between items-center bg-white px-6 shadow-md sticky top-0 z-50">
-        <Link to="/" className="flex items-center space-x-4">
-          <img src={Logo} alt="Care Connect Logo" className="h-20 w-20 object-contain" />
-          <span className="text-2xl md:text-3xl font-bold text-blue-700 tracking-wide">Care Connect</span>
-        </Link>
-
-        <div className="flex items-center gap-3 text-sm md:text-base">
-  <button
-    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-    className="px-4 py-2 rounded-full transition hover:bg-blue-100 hover:text-blue-700"
-  >
-    Home
-  </button>
-
-  <button
-    onClick={() => specialref.current?.scrollIntoView({ behavior: 'smooth' })}
-    className="px-4 py-2 rounded-full transition hover:bg-blue-100 hover:text-blue-700"
-  >
-    About
-  </button>
-
-  <button
-    onClick={() => setScrollToContact(true)}
-    className="px-4 py-2 rounded-full transition hover:bg-blue-100 hover:text-blue-700"
-  >
-    Contact
-  </button>
-
-  <select
-    onChange={handleSpecialisationChange}
-    className="px-4 py-2 rounded-full border border-gray-300 bg-white transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-  >
-    <option value="">Specialization</option>
-    <option value="general">General Physician</option>
-    <option value="cardiology">Cardiology</option>
-    <option value="neurology">Neurology</option>
-    <option value="dermatology">Dermatology</option>
-    <option value="orthopedics">Orthopedics</option>
-    <option value="pediatrics">Pediatrics</option>
-    <option value="psychiatry">Psychiatry</option>
-    <option value="ent">ENT</option>
-    <option value="gynecology">Gynecology</option>
-  </select>
-
-  {isLoggedIn ? (
-    <button
-      onClick={logout}
-      className="px-4 py-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition"
-    >
-      Logout
-    </button>
-  ) : (
-    <Link to="/login">
-      <button className="px-4 py-2 rounded-full bg-blue-400 text-white hover:bg-blue-500 transition">
-        Login
-      </button>
-    </Link>
-  )}
-
-  <Link to="/profile">
-    <button className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-blue-100 transition">
-      <CgProfile className="text-2xl text-gray-700 hover:text-blue-700" />
-    </button>
-  </Link>
-</div>
-
-      </nav>
+      {/* Reusable Navbar with mobile hamburger */}
+      <Navbar specialRef={specialref} contactRef={contactRef} />
 
       {/* Hero Section */}
       <section
@@ -262,78 +200,32 @@ const maxIndex = Math.max(0, Math.ceil(filteredSpecialties.length / itemsPerPage
 
 
 
-{/* Top Doctors */}
+{/* Top Doctors — fetched from real DB */}
 <section className="w-full py-16 bg-gray-50" data-aos="fade-up">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2
-      className="text-3xl font-bold text-center text-gray-800 mb-12"
-      data-aos="fade-down"
-      data-aos-duration="800"
-    >
+    <h2 className="text-3xl font-bold text-center text-gray-800 mb-4" data-aos="fade-down">
       Meet Our Top Doctors
     </h2>
-
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-      {[
-        {
-          name: "Dr. Ananya Sharma",
-          specialty: "Dermatologist",
-          experience: "8 yrs experience",
-          image: "https://randomuser.me/api/portraits/women/44.jpg",
-          description:
-            "Dr. Ananya specializes in treating complex skin conditions and cosmetic dermatology. Known for her compassionate care and modern techniques.",
-        },
-        {
-          name: "Dr. Arjun Patel",
-          specialty: "Orthopedic Surgeon",
-          experience: "12 yrs experience",
-          image: "https://randomuser.me/api/portraits/men/32.jpg",
-          description:
-            "A leading orthopedic expert, Dr. Arjun has performed 1000+ successful joint surgeries. Patients trust him for his precise diagnosis and effective treatment.",
-        },
-        {
-          name: "Dr. Meera Iyer",
-          specialty: "Neurologist",
-          experience: "10 yrs experience",
-          image: "https://randomuser.me/api/portraits/women/65.jpg",
-          description:
-            "Dr. Meera is known for her research-backed neurological treatments and empathetic approach towards patients with chronic neurological disorders.",
-        },
-      ].map((doctor, i) => (
-        <div
-          key={i}
-          className="bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-8 flex flex-col items-center text-center"
-          data-aos="zoom-in"
-          data-aos-delay={i * 200}   // Staggered animation
-          data-aos-duration="800"
-        >
-          <img
-            src={doctor.image}
-            alt={doctor.name}
-            className="w-24 h-24 rounded-full mb-4 border-4 border-sky-100 shadow-md"
-            data-aos="flip-left"
-            data-aos-delay={i * 200 + 100}
-          />
-          <h3
-            className="text-xl font-semibold text-gray-900 mb-1"
-            data-aos="fade-up"
-            data-aos-delay={i * 200 + 150}
-          >
-            {doctor.name}
-          </h3>
-          <p className="text-sm text-gray-600 mb-1">{doctor.specialty}</p>
-          <p className="text-xs text-gray-500 mb-2">{doctor.experience}</p>
-          <p className="text-sm text-gray-700 mb-4">{doctor.description}</p>
-          <button
-            onClick={() => alert('Booking feature coming soon!')}
-            className="mt-auto px-5 py-2 bg-sky-600 text-white text-sm rounded-full hover:bg-sky-700 transition"
-            data-aos="fade-up"
-            data-aos-delay={i * 200 + 200}
-          >
-            Book Appointment
-          </button>
-        </div>
-      ))}
+    <p className="text-center text-gray-500 mb-10">Verified specialists ready to help you</p>
+    {doctorsLoading ? (
+      <SkeletonLoader count={3} />
+    ) : topDoctors.length === 0 ? (
+      <p className="text-center text-gray-400 py-8">No verified doctors available yet.</p>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        {topDoctors.map((doctor, i) => (
+          <div key={doctor._id} data-aos="zoom-in" data-aos-delay={i * 150}>
+            <DoctorCard doctor={doctor} />
+          </div>
+        ))}
+      </div>
+    )}
+    <div className="text-center mt-10">
+      <Link to="/speciality">
+        <button className="px-8 py-3 bg-blue-600 text-white rounded-full text-lg hover:bg-blue-700 shadow-lg">
+          View All Doctors
+        </button>
+      </Link>
     </div>
   </div>
 </section>

@@ -11,37 +11,31 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: "Messages are required" });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      console.error("❌ Missing OPENAI_API_KEY in environment");
-      return res.status(500).json({ error: "Server configuration error: API key missing" });
+      console.error("❌ Missing OPENROUTER_API_KEY in environment");
+      return res.status(500).json({ error: "Server configuration error: OpenRouter key missing" });
     }
 
-    console.log("[DEBUG] API Key present:", apiKey.startsWith("sk-") ? "Yes" : "No");
-    console.log("[DEBUG] Request payload:", {
-      model: "mistralai/mistral-7b-instruct",
-      messages
-    });
+    console.log("[DEBUG] API Key present:", apiKey.startsWith("sk-or") ? "Yes" : "No");
 
     // Dynamic Referer for local + production
     const referer = req.headers.origin || "http://localhost:5173";
 
-    const headers = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`,
-      "Referer": referer, // Must match your frontend origin
-      "X-Title": "CareConnect AI Chat"
-    };
-
-    console.log("[DEBUG] Request headers:", headers);
-
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "mistralai/mistral-7b-instruct",
+        model: "openrouter/auto", 
         messages
       },
-      { headers }
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+          "HTTP-Referer": referer,
+          "X-Title": "CareConnect AI Chat"
+        }
+      }
     );
 
     console.log("[DEBUG] OpenRouter Response Status:", response.status);

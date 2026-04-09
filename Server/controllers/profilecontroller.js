@@ -67,4 +67,25 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { uploadProfilePhoto, getProfile };
+// ✅ Toggle MFA
+const toggleMfa = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { enabled } = req.body;
+
+    let user = await Doctor.findById(userId);
+    if (!user) user = await Patient.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.mfaEnabled = enabled !== undefined ? enabled : !user.mfaEnabled;
+    await user.save();
+
+    console.log(`[AUTH] MFA ${user.mfaEnabled ? 'ENABLED' : 'DISABLED'} for user ${user.email}`);
+    res.json({ message: `MFA ${user.mfaEnabled ? 'enabled' : 'disabled'} successfully`, mfaEnabled: user.mfaEnabled });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { uploadProfilePhoto, getProfile, toggleMfa };
