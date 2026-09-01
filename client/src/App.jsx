@@ -15,6 +15,7 @@ import DoctorDashboard from './pages/doctordashboard';
 import AiChatbot from './pages/aiintegration/aichatbot';
 import AdminPanel from './pages/adminpanel';
 import NotFound from './components/NotFound';
+import ProtectedRoute from './pages/ProtectedRoute'; // ✅ added
 
 function App() {
   return (
@@ -26,14 +27,65 @@ function App() {
         <Route path='/google-success' element={<GoogleSuccess />} />
         <Route path='/speciality' element={<Speciality />} />
         <Route path='/no-doctor' element={<NoDoctor />} />
-        <Route path='/profile' element={<Profile />} />
+
+        {/* 🔐 Protected Routes */}
+        <Route
+          path='/profile'
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path='/doctors/:specialty' element={<DoctorsPage />} />
-        <Route path='/book/:doctorId' element={<BookAppointment />} />
-        <Route path='/doctor/dashboard' element={<DoctorDashboard />} />
-        <Route path='/doctor/appointments' element={<DoctorAppointments />} />
-        <Route path='/ai-chat' element={<AiChatbot />} />
-        {/* Secret admin route - not linked anywhere in the UI */}
-        <Route path='/cc-admin-panel' element={<AdminPanel />} />
+
+        <Route
+          path='/book/:doctorId'
+          element={
+            <ProtectedRoute allowedRoles={['patient']}>
+              <BookAppointment />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/doctor/dashboard'
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/doctor/appointments'
+          element={
+            <ProtectedRoute allowedRoles={['doctor']}>
+              <DoctorAppointments />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/ai-chat'
+          element={
+            <ProtectedRoute>
+              <AiChatbot />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🔐 Admin Protected */}
+        <Route
+          path='/admin'
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminPanel />
+            </ProtectedRoute>
+          }
+        />
+
         {/* 404 catch-all */}
         <Route path='*' element={<NotFound />} />
       </Routes>

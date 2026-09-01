@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const Doctor = require('../models/doctor');
 const Appointment = require('../models/appointment');
 
@@ -31,33 +32,92 @@ exports.getTopDoctors = async (req, res) => {
   }
 };
 
-// Create doctor
+// ─────────────────────────────────────────────────────────────────────────────
+// Create doctor (ADMIN ONLY)
+// FIX: previously accepted the entire req.body unfiltered — anyone, with no
+// login, could set isVerified: true directly and bypass admin approval, and
+// passwords were saved in plaintext (never hashed, unlike /api/auth/signup).
+// Route-level protection (verifyToken + authorizeRoles('admin')) is added in
+// doctorroute.js; this function also defensively whitelists fields and hashes
+// any password server-side regardless of what's sent.
+// ─────────────────────────────────────────────────────────────────────────────
 exports.createDoctor = async (req, res) => {
   try {
-    const doctorData = req.body;
-    if (req.file) {
-      doctorData.certificate = req.file.path;
+    const {
+      fullName, email, password, specialization,
+      experience, location, bio, consultationFee,
+    } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const doctorData = {
+      fullName,
+      email: email.toLowerCase().trim(),
+      password: hashedPassword,
+      specialization: specialization?.toLowerCase(),
+      experience,
+      location,
+      bio,
+      consultationFee,
+      isVerified: false, // always false on creation, regardless of what was sent
+    };
+
+    if (req.file) {
+      doctorData.certificateUrl = req.file.path;
+    }
+
     const newDoctor = new Doctor(doctorData);
     await newDoctor.save();
-    res.status(201).json(newDoctor);
+
+    const { password: _, ...safeDoctor } = newDoctor.toObject();
+    res.status(201).json(safeDoctor);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
 
-// Edit doctor
+// ─────────────────────────────────────────────────────────────────────────────
+// Edit doctor (self or admin only)
+// FIX: previously had no auth check at all and accepted the full req.body,
+// so anyone could PUT { isVerified: true } to self-verify with zero login.
+// Now matches the same ownership pattern already used correctly in
+// deleteDoctor below, plus whitelists which fields a non-admin can change.
+// ─────────────────────────────────────────────────────────────────────────────
 exports.editDoctor = async (req, res) => {
+  const doctorId = req.params.id;
+  const isOwner = req.user.role === 'doctor' && req.user.id === doctorId;
+  const isAdmin = req.user.role === 'admin';
+
+  if (!isOwner && !isAdmin) {
+    return res.status(403).json({ error: 'Forbidden: You cannot edit this profile' });
+  }
+
   try {
-    const updates = req.body;
-    if (req.file) {
-      updates.certificate = req.file.path;
+    let updates;
+
+    if (isAdmin) {
+      // Admin may update anything, including verification status.
+      updates = { ...req.body };
+    } else {
+      // Doctors editing their own profile cannot touch sensitive fields.
+      const { fullName, specialization, experience, location, bio, consultationFee, availability } = req.body;
+      updates = { fullName, specialization, experience, location, bio, consultationFee, availability };
     }
+
+    if (req.file) {
+      updates.certificateUrl = req.file.path;
+    }
+
     const updatedDoctor = await Doctor.findByIdAndUpdate(
-      req.params.id,
+      doctorId,
       updates,
       { new: true }
-    );
+    ).select('-password');
+
     if (!updatedDoctor) {
       return res.status(404).json({ error: 'Doctor not found' });
     }
@@ -116,5 +176,56 @@ exports.getAppointmentsForDoctor = async (req, res) => {
     res.json(appointments);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch appointments' });
+  }
+};
+
+exports.getDoctorAvailability = async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.params.id).select('availability fullName');
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: doctor.availability || [],
+      doctorName: doctor.fullName,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to fetch doctor availability' });
+  }
+};
+
+exports.updateDoctorAvailability = async (req, res) => {
+  try {
+    const doctorId = req.params.id;
+    const { availability } = req.body;
+
+    if (!Array.isArray(availability)) {
+      return res.status(400).json({ success: false, message: 'Availability must be an array.' });
+    }
+
+    const cleanedAvailability = availability.map((entry) => ({
+      day: entry.day,
+      slots: Array.isArray(entry.slots) ? entry.slots.filter(Boolean) : [],
+    })).filter((entry) => entry.day && Array.isArray(entry.slots) && entry.slots.length > 0);
+
+    const doctor = await Doctor.findByIdAndUpdate(
+      doctorId,
+      { availability: cleanedAvailability },
+      { new: true }
+    ).select('-password');
+
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Doctor availability updated successfully',
+      data: doctor.availability,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to update doctor availability' });
   }
 };

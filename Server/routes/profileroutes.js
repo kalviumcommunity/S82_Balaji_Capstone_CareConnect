@@ -4,28 +4,17 @@ const { uploadProfilePhoto, getProfile, toggleMfa } = require("../controllers/pr
 const uploadProfileImageMiddleware = require("../middleware/profileupload");
 const { verifyToken } = require("../middleware/authmiddleware");
 
-const originalRouterUse = router.use;
-router.use = function (...args) {
-  console.log(`[DEBUG] router.use in ${__filename} called with:`, args[0]);
-  return originalRouterUse.apply(this, args);
-};
-
-const originalRouterGet = router.get;
-router.get = function (...args) {
-  console.log(`[DEBUG] router.get in ${__filename} called with:`, args[0]);
-  return originalRouterGet.apply(this, args);
-};
-
-// Profile photo upload route
+// Get profile (auth applied at mount point in app.js, but also here for safety)
 router.get("/get-profile", getProfile);
+
+// Profile photo upload
 router.post(
   "/upload-profile-photo",
-  verifyToken,
   uploadProfileImageMiddleware.single("image"),
   uploadProfilePhoto
 );
 
-router.post("/toggle-mfa", verifyToken, toggleMfa);
-
+// Toggle MFA
+router.post("/toggle-mfa", toggleMfa);
 
 module.exports = router;

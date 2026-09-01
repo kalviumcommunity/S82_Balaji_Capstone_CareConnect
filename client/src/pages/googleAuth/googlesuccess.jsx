@@ -1,26 +1,45 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../authentication/authcontext'; // adjust path if needed
+import { useAuth } from '../authentication/authcontext';
+import api from '../../utils/api';
 
 const GoogleSuccess = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // use login function from context
+  const { login } = useAuth();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
+    const authenticateGoogle = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
 
-    if (token) {
-      localStorage.setItem("token", token);
-      localStorage.setItem("userLoggedIn", "true"); // <-- manually set this
-      login(); // <-- call context login to update UI state
-      alert("Google login successful!");
-      navigate("/");
-    } else {
-      // alert("Google login failed.");
-      // navigate("/login");
-    }
-  }, []);
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('userLoggedIn', 'true');
+
+      try {
+        const res = await api.get('/api/profile/get-profile');
+        const payload = res.data?.data || res.data;
+        // The API returns the user object directly in 'data'
+        const user = payload?.email ? payload : null;
+
+        if (user) {
+          login(token, user);
+          navigate('/');
+        } else {
+          navigate('/login');
+        }
+      } catch (error) {
+        console.error('Google auth profile fetch failed:', error);
+        navigate('/login');
+      }
+    };
+
+    authenticateGoogle();
+  }, [login, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

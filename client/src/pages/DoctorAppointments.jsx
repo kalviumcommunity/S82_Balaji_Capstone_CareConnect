@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import api from '../utils/api';
 import { ChevronLeft, Calendar, Clock, User, Video, CheckCircle, XCircle, Clock3 } from 'lucide-react';
-
-const API_BASE = import.meta.env.VITE_API_URL || 'https://s82-balaji-capstone-careconnect-4.onrender.com';
 
 const statusConfig = {
   booked: { label: 'Pending', color: 'bg-yellow-100 text-yellow-700', icon: <Clock3 className="w-3 h-3" /> },
@@ -15,17 +13,13 @@ const DoctorAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const token = localStorage.getItem('token');
+  const [toast, setToast] = useState('');
 
   useEffect(() => {
-    if (!token) { setError('Not logged in.'); setLoading(false); return; }
     const fetchAppointments = async () => {
       try {
-        // Uses JWT token — no hardcoded doctor ID needed
-        const res = await axios.get(`${API_BASE}/api/appointments/doctor`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setAppointments(res.data);
+        const res = await api.get('/api/appointments/doctor');
+        setAppointments(res.data.data || res.data);
       } catch (err) {
         setError('Failed to load appointments. Please try again.');
       } finally {
@@ -33,17 +27,15 @@ const DoctorAppointments = () => {
       }
     };
     fetchAppointments();
-  }, [token]);
+  }, []);
 
   const handleStatusUpdate = async (apptId, newStatus) => {
     try {
-      await axios.patch(`${API_BASE}/api/appointments/status/${apptId}`, 
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.patch(`/api/appointments/status/${apptId}`, { status: newStatus });
       setAppointments(prev => prev.map(a => a._id === apptId ? { ...a, status: newStatus } : a));
     } catch (err) {
-      alert('Failed to update status');
+      setToast('Failed to update status');
+      setTimeout(() => setToast(''), 3000);
     }
   };
 

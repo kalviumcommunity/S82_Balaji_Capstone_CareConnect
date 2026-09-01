@@ -71,6 +71,22 @@ const doctorSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  availability: [{
+    day: {
+      type: String,
+      enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      required: true,
+    },
+    slots: [{
+      type: String,
+      required: true,
+    }],
+  }],
+  role: {
+  type: String,
+  enum: ['doctor'],
+  default: 'doctor'
+},
 }, { timestamps: true });
 
 module.exports = mongoose.model('Doctor', doctorSchema);
