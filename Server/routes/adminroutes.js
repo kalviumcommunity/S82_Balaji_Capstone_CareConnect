@@ -2,50 +2,89 @@ const express = require('express');
 const router = express.Router();
 const Doctor = require('../models/doctor');
 
-// GET /api/cc-admin-9x7z/doctors — All doctors (unverified first)
+// NOTE: verifyToken + authorizeRoles('admin') is already applied in app.js
+// when this router is mounted. No need to duplicate here.
+
+// 🔐 GET all doctors with pagination (Admin only)
 router.get('/doctors', async (req, res) => {
   try {
-    const doctors = await Doctor.find().sort({ isVerified: 1, createdAt: -1 });
-    res.status(200).json(doctors);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 20));
+    const skip = (page - 1) * limit;
+
+    const filter = {};
+    if (req.query.status === 'pending') filter.isVerified = false;
+    if (req.query.status === 'verified') filter.isVerified = true;
+
+    const [doctors, total] = await Promise.all([
+      Doctor.find(filter)
+        .select('-password -__v')
+        .sort({ isVerified: 1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Doctor.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: doctors,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[ADMIN] Fetch doctors error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// PATCH /api/cc-admin-9x7z/verify/:doctorId — Approve a doctor
+// 🔐 VERIFY doctor (Admin only)
 router.patch('/verify/:doctorId', async (req, res) => {
   try {
     const doctor = await Doctor.findByIdAndUpdate(
       req.params.doctorId,
       { isVerified: true, rejectionReason: null },
       { new: true }
-    );
-    if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
-    
-    console.info(`[ADMIN ACTION] Doctor ${req.params.doctorId} (${doctor.fullName}) VERIFIED by Admin at ${new Date().toISOString()}`);
-    
-    res.status(200).json({ message: 'Doctor verified successfully', doctor });
+    ).select('-password -__v');
+
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found' });
+    }
+
+    console.info(`[ADMIN] Verified doctor ${doctor._id}`);
+    res.status(200).json({ success: true, message: 'Doctor verified successfully', data: doctor });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[ADMIN] Verify error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// PATCH /api/cc-admin-9x7z/reject/:doctorId — Reject a doctor
+// 🔐 REJECT doctor (Admin only)
 router.patch('/reject/:doctorId', async (req, res) => {
   try {
     const { reason } = req.body;
+
     const doctor = await Doctor.findByIdAndUpdate(
       req.params.doctorId,
-      { isVerified: false, rejectionReason: reason || 'Certificate not valid' },
+      {
+        isVerified: false,
+        rejectionReason: reason || 'Certificate not valid',
+      },
       { new: true }
-    );
-    if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
-    
-    console.warn(`[ADMIN ACTION] Doctor ${req.params.doctorId} (${doctor.fullName}) REJECTED by Admin at ${new Date().toISOString()}. Reason: ${reason || 'Certificate not valid'}`);
-    
-    res.status(200).json({ message: 'Doctor rejected', doctor });
+    ).select('-password -__v');
+
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found' });
+    }
+
+    console.warn(`[ADMIN] Rejected doctor ${doctor._id}`);
+    res.status(200).json({ success: true, message: 'Doctor rejected', data: doctor });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[ADMIN] Reject error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 

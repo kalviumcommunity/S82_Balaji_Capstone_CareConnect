@@ -1,125 +1,275 @@
-# 🏥 CareConnect — Doctor Recommendation & Appointment Booking Platform
+# CareConnect
 
 ## Overview
 
-CareConnect is a full-stack healthcare web application that connects patients with verified specialist doctors. It features specialty browsing, AI-powered health chat, real-time appointment booking with video meeting links, role-based dashboards, and an admin verification system.
+CareConnect is a healthcare discovery and appointment platform for connecting patients with verified doctors. The current codebase includes:
 
-## Live Deployment
+- patient and doctor account flows
+- email OTP verification and MFA support
+- specialty-based doctor listing
+- appointment booking with Jitsi meeting links
+- patient and doctor appointment views
+- admin verification/rejection of doctors
+- Google OAuth login
+- AI chat integration via OpenRouter
+- rate limiting on public auth and AI endpoints
 
-- 🌐 **Frontend:** https://capstone-careconnect4.netlify.app
-- ⚙️ **Backend:** https://s82-balaji-capstone-careconnect-3.onrender.com
+This project is built as a React + Vite frontend and an Express + MongoDB backend.
 
-## Features
+## Current Tech Stack
 
-- **Doctor & Patient Roles** — Separate dashboards and flows for each role
-- **Browse by Specialty** — Find doctors (Cardiology, Neurology, Dermatology, etc.)
-- **Smart Search** — Filter doctors by specialty with real-time results
-- **Appointment Booking** — Pick date/time slot; instant double-booking prevention
-- **Video Meetings** — Auto-generated Jitsi meeting link on every booking
-- **Email Confirmation** — Booking confirmation email sent to patients
-- **JWT Authentication** — Secure login with 7-day tokens
-- **Google OAuth** — One-click Google sign-in for patients
-- **OTP Verification** — Email OTP for patient registration
-- **AI Chatbot (Nora)** — Powered by Mistral-7B via OpenRouter
-- **Admin Panel** — Secret URL admin panel to verify/reject doctor certificates
-- **Doctor Dashboard** — Real-time pending appointments with Join Meeting links
-- **Patient Profile** — Recent bookings with meeting links and status badges
-- **Rate Limiting** — AI endpoint (20 req/15min) and Auth (30 req/10min)
-- **Responsive Design** — Mobile navbar with hamburger menu
-- **404 Page** — Proper not-found handling
+### Frontend
+- React 18
+- Vite
+- React Router
+- Tailwind CSS
+- Axios
+- Framer Motion / AOS
+- Lucide icons
 
-## Tech Stack
+### Backend
+- Node.js
+- Express 5
+- MongoDB + Mongoose
+- JWT authentication
+- bcrypt password hashing
+- Passport Google OAuth
+- Nodemailer
+- Multer for uploads
+- Helmet + CORS + rate limiting
+- Zod validation
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18 + Vite + TailwindCSS v4 |
-| Backend | Node.js + Express v5 |
-| Database | MongoDB (Mongoose) |
-| Auth | JWT + Bcrypt + Google OAuth (Passport.js) |
-| AI | OpenRouter API (Mistral-7B-Instruct) |
-| Meetings | Jitsi Meet (meet.jit.si) |
-| Animations | Framer Motion + AOS |
-| Email | Nodemailer |
-| Rate Limiting | express-rate-limit |
-| Deployment | Netlify + Render |
+## Main Features
 
-## User Roles
+- Doctor browsing by specialty
+- Patient signup and login
+- Doctor signup with admin verification
+- Admin approval/rejection flow for doctors
+- OTP-based email verification and MFA login
+- Appointment booking with meeting-link generation
+- Appointment cancellation and status updates
+- Patient and doctor dashboards
+- AI chatbot access
+- Profile retrieval and profile image uploads
+- Protected routes by JWT and role
 
-| Role | Access |
-|------|--------|
-| **Patient** | Book appointments, view bookings + meeting links, AI chatbot |
-| **Doctor** | See pending appointments + meeting links, view patient info |
-| **Admin** | Verify/reject doctors via secret admin panel |
+## Project Structure
+
+```bash
+Capstone-Care-connect/
+├── client/                  # React frontend
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.js
+├── Server/                  # Express backend
+│   ├── app.js
+│   ├── server.js
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── validators/
+│   ├── test/
+│   ├── uploads/
+│   └── package.json
+├── Readme.md
+├── SECURITY.md
+├── LICENSE
+├── HANDOVER.md
+└── ...
+```
 
 ## Installation
 
-```bash
-# Clone
-git clone https://github.com/kalviumcommunity/S82_Balaji_Capstone_CareConnect
+### 1) Backend
 
-# Backend
+```bash
 cd Server
 npm install
-npm start  # nodemon server.js
+npm start
+```
 
-# Frontend
+The server starts with `nodemon server.js` via the `start` script.
+
+### 2) Frontend
+
+```bash
 cd client
 npm install
 npm run dev
 ```
 
-## Environment Variables
+## Required Environment Variables
 
-### Server (`Server/.env`)
-```
+Create a `.env` in `Server/` with the variables the code actually reads:
+
+```env
 SECRET_KEY=your_jwt_secret
-MONGO_URI=your_mongodb_connection_string
+MONGO_URL=your_mongodb_connection_string
+TEST_MONGO_URL=your_mongodb_connection_string_for_a_separate_test_database
+PORT=3000
 FRONTEND_URL=https://capstone-careconnect4.netlify.app
-ADMIN_EMAIL=admin@careconnect.com
-ADMIN_PASSWORD=your_admin_password
+BACKEND_URL=http://localhost:3000
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=your_gmail_app_password
 ADMIN_NAME=your_gmail_address
-OPENAI_API_KEY=your_openrouter_api_key
+ADMIN_PASSWORD_HASH=optional_bcrypt_hash_for_admin
+ADMIN_PORTAL_PASSWORD=optional_plain_admin_password_fallback
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
+OPENROUTER_API_KEY=your_openrouter_key
+NODE_ENV=development
 ```
 
-### Client (`client/.env`)
+Notes:
+- The server reads `MONGO_URL`, not `MONGO_URI`.
+- `TEST_MONGO_URL` should point to a **separate database** from `MONGO_URL` (e.g. a different database name on the same Atlas cluster) so the test suite never reads, writes, or deletes real production data.
+- `ADMIN_PASSWORD` must be a Gmail **App Password**, not the account's regular login password — Gmail rejects regular passwords for SMTP (`535-5.7.8` auth errors). Generate one at https://myaccount.google.com/apppasswords (requires 2-Step Verification enabled on that account).
+- `FRONTEND_URL` is also used in OAuth redirects and email-related flows.
+- `BACKEND_URL` is used for image URLs and CSP configuration.
+
+## Backend Routes
+
+### Public routes
+
+```text
+GET    /
+POST   /api/auth/login
+POST   /api/auth/verify-mfa
+POST   /api/auth/signup
+POST   /api/auth/user/send-otp
+POST   /api/auth/user/verify
+POST   /api/auth/forgot-password
+POST   /api/auth/reset-password
+GET    /api/auth/google
+GET    /api/auth/google/callback
+POST   /api/ai
+GET    /api/doctors/top
+GET    /api/doctors/get
+GET    /api/doctors/specialty/:specialization
+GET    /api/doctors/:doctorId/appointments
 ```
-VITE_API_URL=https://s82-balaji-capstone-careconnect-3.onrender.com
+
+### Protected routes (valid JWT required)
+
+```text
+GET    /api/auth/profile
+GET    /api/profile/get-profile
+POST   /api/profile/upload-profile-photo
+POST   /api/profile/toggle-mfa
+POST   /api/appointments
+GET    /api/appointments/patient
+GET    /api/appointments/doctor
+PATCH  /api/appointments/cancel/:id
+PATCH  /api/appointments/status/:id
+GET    /api/patients/get
+GET    /api/patients/profile
+POST   /api/patients/add
+PUT    /api/patients/edit/:id
+POST   /api/patients/:id/assign-doctor
+PUT    /api/doctors/edit/:id       — self (owning doctor) or admin only
+DELETE /api/doctors/:id            — self (owning doctor) or admin only
 ```
 
-## API Endpoints
+### Admin-only routes (valid JWT + admin role required)
 
-| Method | Route | Auth | Description |
-|--------|-------|------|-------------|
-| POST | `/api/auth/login` | No | Login (doctor/patient/admin) |
-| POST | `/api/auth/signup` | No | Register doctor or patient |
-| GET | `/api/doctors/top` | No | Get top verified doctors |
-| GET | `/api/doctors/specialty/:spec` | No | Doctors by specialty |
-| POST | `/api/appointments` | No | Book appointment (generates meet link) |
-| GET | `/api/appointments/patient/:id` | No | Patient's bookings |
-| GET | `/api/appointments/doctor` | JWT (doctor) | Doctor's appointments |
-| PATCH | `/api/appointments/cancel/:id` | No | Cancel appointment |
-| GET | `/api/cc-admin-9x7z/doctors` | JWT (admin) | List all doctors |
-| PATCH | `/api/cc-admin-9x7z/verify/:id` | JWT (admin) | Verify a doctor |
-| PATCH | `/api/cc-admin-9x7z/reject/:id` | JWT (admin) | Reject a doctor |
-| GET | `/api/profile` | JWT | Get user profile |
-| POST | `/api/ai` | No (rate limited) | AI chatbot |
+```text
+POST   /api/doctors/add
+GET    /api/admin/doctors
+PATCH  /api/admin/verify/:doctorId
+PATCH  /api/admin/reject/:doctorId
+```
 
-## Admin Access
+> **Security note:** `POST /api/doctors/add` and `PUT /api/doctors/edit/:id` were previously unauthenticated — anyone could create a doctor account with `isVerified: true` pre-set, or edit any doctor's profile with no login at all. This has been fixed: `/add` is now admin-only and hashes passwords server-side; `/edit/:id` requires the requester to either be the owning doctor or an admin, and non-admins cannot modify `isVerified` or other sensitive fields through this route.
 
-The admin panel is at a secret path to prevent unauthorized discovery:
-- **Frontend:** `/cc-admin-panel`
-- **Backend:** `/api/cc-admin-9x7z/...`
-- Admin logs in at `/login` using `role: admin` with credentials from `.env`
+## Role Behavior
+
+### Patient
+- login/signup
+- checkout doctor specialties
+- book a verified doctor
+- view own appointment history
+- cancel own appointments
+- use AI chat
+
+### Doctor
+- signup and wait for admin verification
+- view their appointments
+- update appointment status
+- see patient details for their own bookings
+- manage own profile information (cannot self-verify)
+
+### Admin
+- login with admin credentials
+- list doctors
+- verify or reject doctors
+- create doctor accounts directly
+- edit or delete any doctor profile
+
+## App / Client Routes
+
+The frontend route setup includes:
+
+```text
+/                -> home
+/login           -> login
+/signup          -> registration
+/google-success  -> OAuth success redirect
+/speciality     -> specialties page
+/no-doctor      -> empty state
+/doctors/:specialty -> doctor list for a specialty
+/profile        -> protected profile page
+/book/:doctorId -> patient-only booking page
+/doctor/dashboard -> doctor dashboard
+/doctor/appointments -> doctor appointments
+/ai-chat        -> AI chat
+/admin          -> admin panel
+```
+
+## Rate Limiting
+
+The backend applies two limiters in `Server/server.js`:
+
+- AI endpoint: 20 requests / 15 minutes
+- Auth endpoints: 30 requests / 10 minutes
+
+These are applied to:
+
+- `/api/ai`
+- `/api/auth`
+
+> Previously, the auth limiter was mistakenly applied twice on the same `/api/auth` path (mounted alongside both the Google OAuth router and the main auth router), silently counting every request twice and rate-limiting real users at half the intended threshold. This has been fixed — the limiter now applies exactly once per request.
+
+## Email Sending
+
+Emails are sent from backend controller files:
+
+- `Server/controllers/authcontrol.js`
+- `Server/controllers/appointementcontroller.js`
+
+Both use `nodemailer.createTransport(...)` and call `sendMail(...)`. Requires a valid Gmail App Password in `ADMIN_PASSWORD` (see Environment Variables above) — a regular Gmail password will fail with a `535-5.7.8` authentication error.
+
+## Testing
+
+The project includes Jest/Supertest tests under `Server/test/`:
+
+- `auth.test.js`
+- `appointment.test.js`
+- `middleware.test.js`
+- `rateLimit.test.js`
+- `doctor.test.js`
+
+Tests connect to `TEST_MONGO_URL` (falls back to `mongodb://127.0.0.1:27017/...` if unset) and mock `nodemailer` (see `Server/__mocks__/nodemailer.js`) so no real emails are sent during test runs.
+
+As of the latest full run, all tests pass, including new tests added to verify the doctor-route authorization fix (unauthenticated requests to `/add` and `/edit/:id` are correctly rejected, and cross-doctor editing is correctly blocked).
+
+## Notes
+
+- The backend also includes a GraphQL folder (`Server/graphql`), but it is not mounted in the current Express app setup. Pending decision: remove if unused, or wire it in.
+- Some client pages still use local backend URLs or environment assumptions; production deployment should standardize these values via environment variables before going live.
 
 ## Contributing
 
-- Contributions are welcome! If you'd like to contribute, please fork the repository and submit a pull request.
-
-## Conclusion
-
-The Doctor Recommendation Website is a useful tool for users to find healthcare professionals efficiently.The project 
-follows a structured development plan to ensure smooth implementation and a high-quality user experience. Future improvements could 
-include adding reviews, real-time availability tracking, and appointment booking features.
-
+Contributions are welcome. Please keep changes focused and validate the backend and frontend before submitting a PR.

@@ -1,37 +1,38 @@
 const Doctor = require("../models/doctor");
 const Patient = require("../models/patient");
+require("dotenv").config();
+
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000";
 
 // ✅ Upload Profile Photo
 const uploadProfilePhoto = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: "No image uploaded" });
+      return res.status(400).json({ success: false, message: "No image uploaded" });
     }
 
     const userId = req.user.id;
     const imagePath = `uploads/profile-images/${req.file.filename}`;
 
-    // Find Doctor first
+    // Find Doctor first, then Patient
     let user = await Doctor.findById(userId);
-    if (!user) {
-      // If not doctor, check Patient
-      user = await Patient.findById(userId);
-    }
+    if (!user) user = await Patient.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
     user.image = imagePath;
     await user.save();
 
     res.json({
+      success: true,
       message: "Profile photo updated successfully",
-      imageUrl: `https://s82-balaji-capstone-careconnect-4.onrender.com/${imagePath}`,
+      data: { imageUrl: `${BACKEND_URL}/${imagePath}` },
     });
   } catch (err) {
-    console.error("Error in uploadProfilePhoto:", err);
-    res.status(500).json({ message: "Server error", error: err.message });
+    console.error("[PROFILE] uploadProfilePhoto error:", err.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -40,30 +41,34 @@ const getProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    let user = await Doctor.findById(userId).select("name email image");
+    let user = await Doctor.findById(userId).select("-password -__v");
     if (user) {
       return res.json({
-        name: user.name,
-        email: user.email,
-        role: "doctor",
-        image: user.image ? `https://s82-balaji-capstone-careconnect-4.onrender.com/${user.image}` : null
+        success: true,
+        data: {
+          ...user.toObject(),
+          role: "doctor",
+          image: user.image ? `${BACKEND_URL}/${user.image}` : null,
+        },
       });
     }
 
-    user = await Patient.findById(userId).select("name email image");
+    user = await Patient.findById(userId).select("-password -__v");
     if (user) {
       return res.json({
-        name: user.name,
-        email: user.email,
-        role: "patient",
-        image: user.image ? `https://s82-balaji-capstone-careconnect-4.onrender.com/${user.image}` : null
+        success: true,
+        data: {
+          ...user.toObject(),
+          role: "patient",
+          image: user.image ? `${BACKEND_URL}/${user.image}` : null,
+        },
       });
     }
 
-    return res.status(404).json({ message: "User not found" });
+    return res.status(404).json({ success: false, message: "User not found" });
   } catch (err) {
-    console.error("Error in getProfile:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("[PROFILE] getProfile error:", err.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -76,15 +81,20 @@ const toggleMfa = async (req, res) => {
     let user = await Doctor.findById(userId);
     if (!user) user = await Patient.findById(userId);
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
     user.mfaEnabled = enabled !== undefined ? enabled : !user.mfaEnabled;
     await user.save();
 
-    console.log(`[AUTH] MFA ${user.mfaEnabled ? 'ENABLED' : 'DISABLED'} for user ${user.email}`);
-    res.json({ message: `MFA ${user.mfaEnabled ? 'enabled' : 'disabled'} successfully`, mfaEnabled: user.mfaEnabled });
+    console.log(`[AUTH] MFA ${user.mfaEnabled ? 'ENABLED' : 'DISABLED'} for ${user.email}`);
+    res.json({
+      success: true,
+      message: `MFA ${user.mfaEnabled ? 'enabled' : 'disabled'} successfully`,
+      data: { mfaEnabled: user.mfaEnabled },
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("[PROFILE] toggleMfa error:", err.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 

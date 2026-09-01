@@ -1,21 +1,24 @@
 const express = require("express");
 const router = express.Router();
 const appointmentController = require("../controllers/appointementcontroller");
-const { verifyToken } = require("../middleware/authmiddleware");
+const { verifyToken, authorizeRoles } = require("../middleware/authmiddleware");
 
-// Create booking (public — patient submits their own ID)
-router.post("/", appointmentController.createAppointment);
+// All appointment routes require authentication
+router.use(verifyToken);
 
-// Get appointments by patient ID
-router.get("/patient/:patientId", appointmentController.getAppointmentsByPatient);
+// Create booking (patient only — patientId comes from JWT, not body)
+router.post("/", authorizeRoles('patient'), appointmentController.createAppointment);
 
-// Get appointments for the logged-in doctor (JWT-based, no hardcoded ID)
-router.get("/doctor", verifyToken, appointmentController.getAppointmentsByDoctor);
+// Get appointments for the logged-in patient (JWT-based, IDOR-safe)
+router.get("/patient", authorizeRoles('patient'), appointmentController.getAppointmentsByPatient);
 
-// Cancel an appointment
+// Get appointments for the logged-in doctor (JWT-based)
+router.get("/doctor", authorizeRoles('doctor'), appointmentController.getAppointmentsByDoctor);
+
+// Cancel an appointment (owner only — checked in controller)
 router.patch("/cancel/:id", appointmentController.cancelAppointment);
 
-// Update status (Doctor Only)
-router.patch("/status/:id", verifyToken, appointmentController.updateAppointmentStatus);
+// Update status (Doctor Only — ownership checked in controller)
+router.patch("/status/:id", authorizeRoles('doctor'), appointmentController.updateAppointmentStatus);
 
 module.exports = router;
