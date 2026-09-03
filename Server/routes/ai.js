@@ -13,11 +13,9 @@ router.post('/', async (req, res) => {
 
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      console.error("❌ Missing OPENROUTER_API_KEY in environment");
       return res.status(500).json({ error: "Server configuration error: OpenRouter key missing" });
     }
 
-    console.log("[DEBUG] API Key present:", apiKey.startsWith("sk-or") ? "Yes" : "No");
 
     // Dynamic Referer for local + production
     const referer = req.headers.origin || "http://localhost:5173";
@@ -38,13 +36,11 @@ router.post('/', async (req, res) => {
       }
     );
 
-    console.log("[DEBUG] OpenRouter Response Status:", response.status);
     res.json(response.data);
 
   } catch (error) {
-    console.error("❌ AI Route Error:", error.response?.data || error.message);
-    return res.status(error.response?.status || 500).json({
-      error: error.response?.data || { message: error.message }
+    return res.status(502).json({
+      error: { message: "AI service is temporarily unavailable" }
     });
   }
 });

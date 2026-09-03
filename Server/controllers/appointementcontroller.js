@@ -194,9 +194,7 @@ async function sendBookingConfirmation(toEmail, recipientName, patientName, doct
         </div>
       `,
     });
-    console.log(`✅ Email sent to ${toEmail}`);
   } catch (err) {
-    console.error(`❌ Email failed to ${toEmail}:`, err.message);
   }
 }
 
@@ -280,7 +278,6 @@ exports.createAppointment = async (req, res) => {
       data: { appointment: newAppointment, meetingLink },
     });
   } catch (err) {
-    console.error('[APPOINTMENT] Create error:', err.message);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
@@ -295,7 +292,6 @@ exports.getAppointmentsByPatient = async (req, res) => {
       .sort({ date: -1 });
     res.status(200).json({ success: true, data: appointments });
   } catch (err) {
-    console.error('[APPOINTMENT] Patient fetch error:', err.message);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
@@ -310,7 +306,6 @@ exports.getAppointmentsByDoctor = async (req, res) => {
       .sort({ date: 1 });
     res.status(200).json({ success: true, data: appointments });
   } catch (err) {
-    console.error('[APPOINTMENT] Doctor fetch error:', err.message);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
@@ -339,7 +334,6 @@ exports.cancelAppointment = async (req, res) => {
 
     res.status(200).json({ success: true, message: 'Appointment cancelled', data: appointment });
   } catch (err) {
-    console.error('[APPOINTMENT] Cancel error:', err.message);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
@@ -372,7 +366,6 @@ exports.updateAppointmentStatus = async (req, res) => {
       data: appointment,
     });
   } catch (err) {
-    console.error('[APPOINTMENT] Status update error:', err.message);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };

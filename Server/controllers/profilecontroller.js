@@ -22,7 +22,11 @@ const uploadProfilePhoto = async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    user.image = imagePath;
+    if (user instanceof Doctor) {
+      user.photo = imagePath;
+    } else {
+      user.profilePhoto = imagePath;
+    }
     await user.save();
 
     res.json({
@@ -31,7 +35,6 @@ const uploadProfilePhoto = async (req, res) => {
       data: { imageUrl: `${BACKEND_URL}/${imagePath}` },
     });
   } catch (err) {
-    console.error("[PROFILE] uploadProfilePhoto error:", err.message);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -48,7 +51,7 @@ const getProfile = async (req, res) => {
         data: {
           ...user.toObject(),
           role: "doctor",
-          image: user.image ? `${BACKEND_URL}/${user.image}` : null,
+          image: user.photo ? `${BACKEND_URL}/${user.photo}` : null,
         },
       });
     }
@@ -60,14 +63,13 @@ const getProfile = async (req, res) => {
         data: {
           ...user.toObject(),
           role: "patient",
-          image: user.image ? `${BACKEND_URL}/${user.image}` : null,
+          image: user.profilePhoto ? `${BACKEND_URL}/${user.profilePhoto}` : null,
         },
       });
     }
 
     return res.status(404).json({ success: false, message: "User not found" });
   } catch (err) {
-    console.error("[PROFILE] getProfile error:", err.message);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -86,14 +88,12 @@ const toggleMfa = async (req, res) => {
     user.mfaEnabled = enabled !== undefined ? enabled : !user.mfaEnabled;
     await user.save();
 
-    console.log(`[AUTH] MFA ${user.mfaEnabled ? 'ENABLED' : 'DISABLED'} for ${user.email}`);
     res.json({
       success: true,
       message: `MFA ${user.mfaEnabled ? 'enabled' : 'disabled'} successfully`,
       data: { mfaEnabled: user.mfaEnabled },
     });
   } catch (err) {
-    console.error("[PROFILE] toggleMfa error:", err.message);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

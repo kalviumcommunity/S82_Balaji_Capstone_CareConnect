@@ -23,7 +23,6 @@ exports.createPatient = async (req, res) => {
 
 // Edit 
 exports.editPatient = async (req, res) => {
-  console.log("Edit Patient route hit"); // Log to check if the route is hit
   try {
     const updates = req.body;
     const updatedPatient = await Patient.findByIdAndUpdate(
@@ -34,12 +33,9 @@ exports.editPatient = async (req, res) => {
     if (!updatedPatient) {
       return res.status(404).json({ error: 'Patient Not Found' });
     }
-    console.log("ID:", req.params.id);
-    console.log("Body:", req.body);
     res.status(200).json({updatedPatient});
   } catch (err) {
-    console.log("Error in editPatient:", err); // Log the error explicitly
-    res.status(400).json({ error: err });
+    res.status(400).json({ error: 'Unable to update patient' });
   }
 };
 

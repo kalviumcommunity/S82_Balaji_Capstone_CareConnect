@@ -44,8 +44,7 @@ const AiChatbot = () => {
 
       const aiMessage = response.data.choices?.[0]?.message?.content || "No response from AI.";
       setMessages([...newMessages, { sender: "bot", text: aiMessage }]);
-    } catch (error) {
-      console.error("AI API Error:", error.response?.data || error.message);
+    } catch {
       setMessages([...newMessages, { sender: "bot", text: "⚠️ Sorry, something went wrong. Please try again." }]);
     } finally {
       setLoading(false);

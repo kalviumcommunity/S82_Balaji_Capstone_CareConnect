@@ -3,9 +3,6 @@
 // Catches any error passed via next(err)
 
 const errorHandler = (err, req, res, next) => {
-  // Log full error on server only
-  console.error(`[ERROR] ${req.method} ${req.originalUrl} →`, err.message);
-
   // Mongoose duplicate key
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0] || 'field';

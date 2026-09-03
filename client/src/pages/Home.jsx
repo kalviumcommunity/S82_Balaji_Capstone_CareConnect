@@ -13,7 +13,7 @@ import Navbar from '../components/Navbar';
 import DoctorCard from '../components/DoctorCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://s82-balaji-capstone-careconnect-4.onrender.com';
+const API_BASE =  'https://s82-balaji-capstone-careconnect-4.onrender.com';
 
 function Home() {
   const { isLoggedIn, logout } = useAuth();

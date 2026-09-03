@@ -17,8 +17,8 @@ function DoctorsPage() {
       setLoading(true);
       const res = await axios.get(`${API_BASE}/api/doctors/specialty/${specialty}`);      
       setDoctors(res.data.doctors || []);
-    } catch (err) {
-      console.error('Failed to fetch doctors', err);
+    } catch {
+      setDoctors([]);
     } finally {
       setLoading(false);
     } 
@@ -34,8 +34,8 @@ function DoctorsPage() {
           },
         });
         setCurrentUser(res.data.user);
-      } catch (err) {
-        console.log('Profile fetch error:', err);
+      } catch {
+        setCurrentUser(null);
       }
     }
   };
@@ -60,8 +60,7 @@ function DoctorsPage() {
       }, 2000);
 
       fetchDoctors();
-    } catch (err) {
-      console.error('Failed to delete doctor', err);
+    } catch {
       setDeleteMessage("Failed to delete doctor ❌");
 
       setTimeout(() => {

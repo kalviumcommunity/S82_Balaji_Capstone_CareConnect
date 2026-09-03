@@ -27,10 +27,6 @@ function verifyToken(req, res, next) {
   try {
     const decoded = jwt.verify(token, SECRET);
 
-    if (process.env.NODE_ENV === "development") {
-      console.log("JWT Payload:", decoded);
-    }
-
     req.user = decoded;
     next();
   } catch (err) {
