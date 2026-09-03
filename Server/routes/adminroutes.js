@@ -36,7 +36,6 @@ router.get('/doctors', async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('[ADMIN] Fetch doctors error:', err.message);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -54,10 +53,8 @@ router.patch('/verify/:doctorId', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
 
-    console.info(`[ADMIN] Verified doctor ${doctor._id}`);
     res.status(200).json({ success: true, message: 'Doctor verified successfully', data: doctor });
   } catch (err) {
-    console.error('[ADMIN] Verify error:', err.message);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -80,10 +77,8 @@ router.patch('/reject/:doctorId', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
 
-    console.warn(`[ADMIN] Rejected doctor ${doctor._id}`);
     res.status(200).json({ success: true, message: 'Doctor rejected', data: doctor });
   } catch (err) {
-    console.error('[ADMIN] Reject error:', err.message);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

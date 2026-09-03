@@ -26,10 +26,9 @@ const SpecializationDoctors = () => {
         const res = await axios.get(
           `${API_BASE}/api/doctors/specialty/${specialization.toLowerCase()}`
         );
-        console.log('Doctors data:', res.data.doctors);
         setDoctors(res.data.doctors || []);
-      } catch (error) {
-        console.error('Error fetching doctors:', error);
+      } catch {
+        setDoctors([]);
       } finally {
         setLoading(false);
       }

@@ -14,6 +14,7 @@ const profileRoutes = require('./routes/profileroutes');
 const aiRoute = require('./routes/ai');
 const authRoutes = require('./routes/auth');
 const doctorRoutes = require('./routes/doctorroute');
+const ratingRoutes = require('./routes/ratingroutes');
 const adminRoutes = require('./routes/adminroutes');
 const { verifyToken, authorizeRoles } = require('./middleware/authmiddleware');
 
@@ -21,7 +22,9 @@ const app = express();
 app.set('trust proxy', 1);
 
 // ── Security & Logging ────────────────────────────────────────────────────────
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'));
+}
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -78,6 +81,7 @@ app.use('/api/auth', authLimiter, googleAuthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiLimiter, aiRoute);
 app.use('/api/doctors', doctorRoutes);              // Doctor listing (public)
+app.use('/api/ratings', ratingRoutes);
 
 // ── Protected Routes ──────────────────────────────────────────────────────────
 app.use('/api/profile', verifyToken, profileRoutes);

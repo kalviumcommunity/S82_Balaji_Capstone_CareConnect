@@ -35,6 +35,9 @@ function sanitizeUser(user, role) {
 async function sendOTP(email, otp) {
   const transporter = nodemailer.createTransport({
     service: 'Gmail',
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
     auth: {
       user: process.env.ADMIN_NAME,
       pass: process.env.ADMIN_PASSWORD,
@@ -72,7 +75,6 @@ exports.getprofile = async (req, res) => {
     return res.json({ success: true, data: { user: patient, role } });
 
   } catch (error) {
-    console.error('[PROFILE] Error:', error.message);
     return res.status(500).json({ success: false, message: 'Failed to fetch profile' });
   }
 };
@@ -111,7 +113,6 @@ if (!result.success) {
       } else if (adminPasswordPlain) {
         // Plain-text fallback — log warning
         if (process.env.NODE_ENV !== 'production') {
-          console.warn('[SECURITY] Admin password compared in plain text. Set ADMIN_PASSWORD_HASH for production.');
         }
         isValidAdmin = (password === adminPasswordPlain);
       }
@@ -155,7 +156,6 @@ if (!result.success) {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.warn(`[SECURITY] Failed login for ${normalizedEmail} (IP: ${req.ip})`);
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
@@ -168,8 +168,12 @@ if (!result.success) {
         userId: user._id,
         role: actualRole,
       });
-      await sendOTP(normalizedEmail, otp);
-      console.log(`[AUTH] Verification OTP sent to unactivated user: ${normalizedEmail}`);
+      try {
+        await sendOTP(normalizedEmail, otp);
+      } catch {
+        otpStore.delete(normalizedEmail);
+        return res.status(503).json({ success: false, message: 'Unable to send the verification code. Please try again.' });
+      }
       
       return res.status(200).json({
         success: true,
@@ -192,8 +196,12 @@ if (!result.success) {
         attempts: 0,
       });
 
-      await sendOTP(normalizedEmail, otp);
-      console.log(`[AUTH] MFA OTP sent to ${normalizedEmail} (Role: ${actualRole})`);
+      try {
+        await sendOTP(normalizedEmail, otp);
+      } catch {
+        otpStore.delete(normalizedEmail);
+        return res.status(503).json({ success: false, message: 'Unable to send the verification code. Please try again.' });
+      }
 
       return res.status(200).json({
         success: true,
@@ -204,7 +212,6 @@ if (!result.success) {
     }
 
     // ── Issue token (no MFA path) ───────────────────────────────────────────
-    console.info(`[AUTH] Login success: ${normalizedEmail} (${actualRole})`);
     const token = jwt.sign({ id: user._id, role: actualRole }, SECRET, { expiresIn: '7d' });
 
     res.status(200).json({
@@ -214,7 +221,6 @@ if (!result.success) {
     });
 
   } catch (err) {
-    console.error('[AUTH] Login error:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
@@ -270,7 +276,6 @@ exports.signup = async (req, res) => {
         role: 'patient',
       });
       await sendOTP(normalizedEmail, otp);
-      console.log(`[AUTH] Signup OTP sent to ${normalizedEmail}`);
       return res.status(201).json({
         success: true,
         message: 'Registration successful. Please verify your email with the OTP sent.',
@@ -284,7 +289,6 @@ exports.signup = async (req, res) => {
       message: 'User registered successfully. Admin approval pending for doctors.',
     });
   } catch (err) {
-    console.error('[AUTH] Signup error:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
@@ -304,7 +308,6 @@ exports.sendOtpForSignup = async (req, res) => {
     await sendOTP(normalizedEmail, otp);
     res.status(200).json({ success: true, message: 'OTP sent to your email' });
   } catch (err) {
-    console.error('[AUTH] OTP send error:', err.message);
     res.status(500).json({ success: false, message: 'Failed to send OTP' });
   }
 };
@@ -325,7 +328,6 @@ exports.otpverify = async (req, res) => {
     return res.status(410).json({ success: false, message: 'OTP expired or not requested' });
   }
   if (stored.otp !== trimmedOtp) {
-    console.warn(`[AUTH] Invalid OTP attempt for ${normalizedEmail}`);
     return res.status(400).json({ success: false, message: 'Invalid OTP' });
   }
 
@@ -352,17 +354,14 @@ exports.verifyMfaLogin = async (req, res) => {
   const stored = otpStore.get(normalizedEmail);
   if (!stored || Date.now() > stored.expiresAt) {
     otpStore.delete(normalizedEmail);
-    console.warn(`[SECURITY] MFA expired for ${normalizedEmail}`);
     return res.status(410).json({ success: false, message: 'MFA expired or not requested' });
   }
 
   if (stored.otp !== trimmedOtp) {
     stored.attempts = (stored.attempts || 0) + 1;
-    console.warn(`[SECURITY] Invalid MFA attempt (${stored.attempts}/3) for ${normalizedEmail}`);
 
     if (stored.attempts >= 3) {
       otpStore.delete(normalizedEmail);
-      console.error(`[SECURITY] MFA blocked after 3 failed attempts for ${normalizedEmail}`);
       return res.status(403).json({ success: false, message: 'Too many failed attempts. Please login again.' });
     }
 
@@ -383,10 +382,8 @@ exports.verifyMfaLogin = async (req, res) => {
   if (role === 'patient' && !user.isActivated) {
     user.isActivated = true;
     await user.save();
-    console.info(`[AUTH] Account activated for ${normalizedEmail} during MFA/Login flow`);
   }
 
-  console.info(`[AUTH] MFA verified for ${normalizedEmail}`);
   const token = jwt.sign({ id: user._id, role }, SECRET, { expiresIn: '7d' });
   otpStore.delete(normalizedEmail);
 
@@ -439,7 +436,6 @@ exports.googleAuthCallback = async (req, res) => {
     });
     return res.redirect(`${FRONTEND_URL}/google-success?token=${token}`);
   } catch (error) {
-    console.error('[AUTH] Google Auth Error:', error.message);
     res.redirect(`${FRONTEND_URL}/google-failed`);
   }
 };
@@ -475,11 +471,9 @@ exports.forgotPassword = async (req, res) => {
     });
 
     await sendOTP(normalizedEmail, otp);
-    console.log(`[AUTH] Password reset OTP sent to ${normalizedEmail}`);
 
     res.status(200).json({ success: true, message: 'Password reset OTP sent to your email' });
   } catch (err) {
-    console.error('[AUTH] Forgot password error:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
@@ -511,11 +505,9 @@ exports.resetPassword = async (req, res) => {
     await user.save();
 
     otpStore.delete(normalizedEmail);
-    console.log(`[AUTH] Password reset successful for ${normalizedEmail}`);
 
     res.status(200).json({ success: true, message: 'Password reset successful. You can now login.' });
   } catch (err) {
-    console.error('[AUTH] Reset password error:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };

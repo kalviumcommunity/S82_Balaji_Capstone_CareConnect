@@ -32,8 +32,7 @@ const GoogleSuccess = () => {
         } else {
           navigate('/login');
         }
-      } catch (error) {
-        console.error('Google auth profile fetch failed:', error);
+      } catch {
         navigate('/login');
       }
     };

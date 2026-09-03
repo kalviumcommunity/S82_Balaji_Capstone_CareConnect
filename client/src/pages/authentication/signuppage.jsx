@@ -93,7 +93,6 @@ const SignupForm = () => {
         setTimeout(() => navigate("/login"), 1500);
       }
     } catch (err) {
-      console.error(err);
       showToast(err.response?.data?.message || err.response?.data?.error || "Signup failed. Try again.");
     } finally {
       setIsLoading(false);

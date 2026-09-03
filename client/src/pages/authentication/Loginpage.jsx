@@ -66,7 +66,10 @@ const LoginForm = () => {
         showToast("Login failed. Unexpected response.");
       }
     } catch (err) {
-      showToast(err.response?.data?.message || "Login failed");
+      const message = err.code === "ECONNABORTED"
+        ? "The login service took too long to respond. Please try again."
+        : err.response?.data?.message || "Login failed";
+      showToast(message);
     } finally {
       setIsLoading(false);
     }

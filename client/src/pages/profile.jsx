@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, Video, Calendar, Clock, CheckCircle, XCircle, Clock3, Mail, MapPin, Award, Stethoscope, Droplet, Phone, ShieldCheck, FileText, Camera, Sparkles, Building2, UserCircle2 } from 'lucide-react';
+import { ChevronLeft, Video, Calendar, Clock, CheckCircle, XCircle, Clock3, Mail, MapPin, Award, Stethoscope, Droplet, Phone, ShieldCheck, FileText, Camera, Sparkles, Building2, UserCircle2, Star } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'https://s82-balaji-capstone-careconnect-4.onrender.com';
 
@@ -20,8 +20,25 @@ function ProfilePage() {
   const [appointments, setAppointments] = useState([]);
   const [apptLoading, setApptLoading] = useState(false);
   const [toast, setToast] = useState('');
+  const [ratingScores, setRatingScores] = useState({});
+  const [ratingReviews, setRatingReviews] = useState({});
+  const [ratedAppointments, setRatedAppointments] = useState({});
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+
+  const submitRating = async (appointmentId) => {
+    try {
+      await api.post('/api/ratings', {
+        appointmentId,
+        score: ratingScores[appointmentId],
+        review: ratingReviews[appointmentId] || '',
+      });
+      setRatedAppointments((previous) => ({ ...previous, [appointmentId]: true }));
+      showToast('Rating submitted successfully!');
+    } catch (error) {
+      showToast(error.response?.data?.message || 'Failed to submit rating');
+    }
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -43,7 +60,7 @@ function ProfilePage() {
         return { ...prev, patient: { ...prev.patient, image: imageUrl } };
       });
       showToast('Profile photo updated successfully!');
-    } catch (error) {
+    } catch {
       showToast('Failed to upload image');
     }
   };
@@ -79,7 +96,7 @@ function ProfilePage() {
             setApptLoading(false);
           }
         }
-      } catch (err) {
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);
@@ -374,6 +391,41 @@ function ProfilePage() {
                               )}
                             </div>
                           </div>
+                          {appt.status === 'completed' && !ratedAppointments[appt._id] && (
+                            <div className="mt-5 pt-4 border-t border-slate-100">
+                              <p className="text-sm font-semibold text-slate-700 mb-2">Rate this consultation</p>
+                              <div className="flex items-center gap-1 mb-3">
+                                {[1, 2, 3, 4, 5].map((score) => (
+                                  <button
+                                    key={score}
+                                    type="button"
+                                    aria-label={`${score} star${score > 1 ? 's' : ''}`}
+                                    onClick={() => setRatingScores((previous) => ({ ...previous, [appt._id]: score }))}
+                                    className="p-1"
+                                  >
+                                    <Star className={`w-5 h-5 ${score <= (ratingScores[appt._id] || 0) ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
+                                  </button>
+                                ))}
+                              </div>
+                              <div className="flex flex-col sm:flex-row gap-2">
+                                <input
+                                  value={ratingReviews[appt._id] || ''}
+                                  onChange={(event) => setRatingReviews((previous) => ({ ...previous, [appt._id]: event.target.value }))}
+                                  maxLength={1000}
+                                  placeholder="Optional review"
+                                  className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                                />
+                                <button
+                                  type="button"
+                                  disabled={!ratingScores[appt._id]}
+                                  onClick={() => submitRating(appt._id)}
+                                  className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  Submit rating
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       );
                     })}
